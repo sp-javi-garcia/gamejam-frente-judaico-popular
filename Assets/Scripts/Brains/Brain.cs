@@ -79,16 +79,38 @@ public class Brain : MonoBehaviour
     void SetDisappearing()
     {
         _state = State.DISAPPEARING;
+        StartCoroutine(DoDisappear());
     }
 
+    IEnumerator DoDisappear()
+    {
+        iTween.ScaleTo(gameObject, iTween.Hash("scale", Vector3.zero,
+                                               "easetype", iTween.EaseType.easeInBack,
+                                               "time", 0.2));
+        yield return new WaitForSeconds(0.2f);
+        Destroy(gameObject);
+    }
+
+    const float DefaultBrainTimeout = 5f;
+    const float InaccessibleBrainTimeout = 2f;
+    float _remainingIdleTime;
     void SetIdle()
     {
+        _remainingIdleTime = transform.position.y > 3f ? InaccessibleBrainTimeout : DefaultBrainTimeout;
         _state = State.IDLE;
+    }
+
+    void SetWaiting()
+    {
+        _state = State.WAITING;
     }
 
     void SetFalling()
     {
         _state = State.FALLING;
+        Rigidbody body = gameObject.AddComponent<Rigidbody>();
+        body.mass = 50f;
+        //body.constraints = RigidbodyConstraints.FreezeRotation;
     }
 
     void DraggingBehavior()
@@ -101,7 +123,7 @@ public class Brain : MonoBehaviour
         _appearingRemainingTime -= Time.deltaTime;
         if (_appearingRemainingTime <= 0f)
         {
-            SetIdle();
+            SetWaiting();
         }
     }
 
@@ -109,13 +131,31 @@ public class Brain : MonoBehaviour
     {
     }
 
+    float _fallingTimeout = 1f;
     void FallingBehavior()
     {
+        if (gameObject.rigidbody.IsSleeping())
+        {
+            _fallingTimeout -= Time.deltaTime;
+        }
+        else
+        {
+            _fallingTimeout = 1f;
+        }
+
+        if (_fallingTimeout <= 0f)
+        {
+            SetIdle();
+        }
     }
 
     void IdleBehavior()
     {
-
+        _remainingIdleTime -= Time.deltaTime;
+        if (_remainingIdleTime < 0f)
+        {
+            SetDisappearing();
+        }
     }
 
     Vector3 _startDragPosition;
@@ -130,17 +170,28 @@ public class Brain : MonoBehaviour
 
     public void OnBrainMoved(Vector3 position)
     {
-        transform.position = Vector3.Lerp(transform.position, position, 0.1f);
+        transform.position = Vector3.Lerp(transform.position, position, 0.3f);
     }
+
+
 
     float kReturnTime = 0.5f;
 
-    public void OnBrainReleased(Vector3 endPosition)
+    public bool OnBrainReleased(Vector3 endPosition, bool overBrainDepot)
     {
-        iTween.MoveTo(gameObject, iTween.Hash("position", _startDragPosition,
-                                              "islocal", true,
-                                              "easetype", iTween.EaseType.easeOutExpo,
-                                              "time", kReturnTime));
-        Debug.Log("Released!");
+        if (overBrainDepot)
+        {
+            iTween.MoveTo(gameObject, iTween.Hash("position", _startDragPosition,
+                                                  "islocal", true,
+                                                  "easetype", iTween.EaseType.easeOutExpo,
+                                                  "time", kReturnTime));
+            return false;
+        }
+        else
+        {
+            SetFalling();
+            Debug.Log("Release!");
+            return true;
+        }
     }
 }

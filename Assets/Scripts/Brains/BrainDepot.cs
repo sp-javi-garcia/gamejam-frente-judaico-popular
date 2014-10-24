@@ -84,6 +84,11 @@ public class BrainDepot : MonoBehaviour
         return Vector3.zero;
     }
 
+    bool TouchInsideBrainDepotArea()
+    {
+        return (Input.mousePosition.y / Screen.height) < 0.1f;
+    }
+
     void CheckBrainClicked()
     {
         if (Input.GetMouseButtonDown(0))
@@ -102,7 +107,10 @@ public class BrainDepot : MonoBehaviour
         }
         if (Input.GetMouseButtonUp(0) && _selectedBrain != null)
         {
-            _selectedBrain.OnBrainReleased(GetBrainPositionByTouch());
+            if (_selectedBrain.OnBrainReleased(GetBrainPositionByTouch(), TouchInsideBrainDepotArea()))
+            {
+                Brains.Remove(_selectedBrain);
+            }
             _selectedBrain = null;
         }
 
