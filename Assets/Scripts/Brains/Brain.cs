@@ -17,22 +17,20 @@ public class Brain : MonoBehaviour
     }
 
     State _state;
-    GameObject _brainSpot;
 
-    public static Brain CreateBrain(BrainPrefab brainPrefab, GameObject brainSpot)
+    public static Brain CreateBrain(BrainPrefab brainPrefab, BrainDepot depot, Vector3 position)
     {
         GameObject brainGO = (GameObject)GameObject.Instantiate(Resources.Load(brainPrefab.Path));
         Brain brain = brainGO.GetComponent<Brain>();
-        brain.Init(brainSpot);
+        brain.Init(position, depot);
         return brain;
     }
 
-    void Init(GameObject brainSpot)
+    void Init(Vector3 position, BrainDepot depot)
     {
         SetAppearing();
-        _brainSpot = brainSpot;
-        transform.parent = _brainSpot.transform;
-        transform.localPosition = Vector3.zero;
+        transform.parent = depot.transform;
+        transform.position = position;
         transform.localRotation = Quaternion.identity;
     }
 
