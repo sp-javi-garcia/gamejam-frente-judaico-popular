@@ -1,0 +1,48 @@
+# Unity generated #
+# =============== #
+Temp/
+Obj/
+UnityGenerated/
+Library/
+
+# ===================================== #
+# Project workflow                      #
+# ===================================== #
+#Assets/StaticAssets
+Builds/
+
+# ===================================== #
+# Visual Studio / MonoDevelop generated #
+# ===================================== #
+ExportedObj/
+*.svd
+*.userprefs
+*.csproj
+*.pidb
+*.suo
+*.sln
+*.user
+*.unityproj
+*.booproj
+ 
+# ============ #
+# OS generated #
+# ============ #
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Assets/Resources/resources
+
+ StaticAssets/Assets
+ SP-AssetsManagement-UserConfig.ini
+
+Assets/Libraries/sp-tool-lib-unityshared
+Assets/Libraries/sp-tool-lib-unityshared.meta
+Assets/StreamingAssets/genjsons
+Assets/StreamingAssets/genjsons.meta
+Assets/StreamingAssets/user.conf
+Assets/StreamingAssets/user.conf.meta
