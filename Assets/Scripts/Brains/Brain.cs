@@ -127,6 +127,9 @@ public class Brain : MonoBehaviour
         _state = State.FALLING;
         _fallingForce = force;
         _fallingTime = 0f;
+        iTween.RotateTo(gameObject, iTween.Hash("rotation", Vector3.zero,
+                                      "easetype", iTween.EaseType.linear,
+                                      "time", 1f));
         //body.constraints = RigidbodyConstraints.FreezeRotation;
     }
 
@@ -161,7 +164,7 @@ public class Brain : MonoBehaviour
         _characterController.Move((2f * _fallingForce + (40 * _fallingTime * Vector3.down)) * Time.deltaTime);
         //_fallingForce = Vector3.Lerp(_fallingForce, Vector3.zero, 0.1f);
         
-        if (Physics.Raycast (transform.position, -Vector3.up, 1f))
+        if (transform.position.y < 1.5f) //Physics.Raycast (transform.position, -Vector3.up, 1f))
         {
             _fallingForce = Vector3.Lerp(_fallingForce, Vector3.zero, 0.25f);
             //_fallingForce = Vector3.zero;
