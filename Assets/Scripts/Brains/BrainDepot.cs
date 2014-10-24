@@ -18,6 +18,7 @@ public class BrainDepot : MonoBehaviour
     float kDelayBetweenStartBrains = 0.5f;
 
     public List<Brain> Brains = new List<Brain>();
+	public List<Brain> ActiveBrains = new List<Brain>();
     public Transform ConveyorBeltStartPoint;
     public Transform ConveyorBeltEndPoint;
     public float ConveyorSpeed;
@@ -28,12 +29,18 @@ public class BrainDepot : MonoBehaviour
 
     void Start()
     {
+        Application.targetFrameRate = 60;
         StartCoroutine(StartSequence());
     }
 
     Vector3 GetFinalBrainConveyorPosition(int index)
     {
         return ConveyorBeltStartPoint.position + ((float) (index)) * (ConveyorBeltEndPoint.position - ConveyorBeltStartPoint.position) / kMaxBrains;
+    }
+
+    public Vector3 GetBrainPositionByBrain(Brain brain)
+    {
+        return GetFinalBrainConveyorPosition(Brains.IndexOf(brain));
     }
 
     IEnumerator StartSequence()
@@ -86,7 +93,7 @@ public class BrainDepot : MonoBehaviour
 
     Vector3 GetBrainPositionByTouch()
     {
-        Plane plane = new Plane(Vector3.up, new Vector3(0f, BrainFallHeight, 0f));
+        Plane plane = new Plane(Vector3.up, new Vector3(0f, transform.position.y, 0f));
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         float distance;
         if (plane.Raycast(ray, out distance))
@@ -101,16 +108,19 @@ public class BrainDepot : MonoBehaviour
         return (Input.mousePosition.y / Screen.height) < 0.1f;
     }
 
+    bool _onMouseClick = false;
     void CheckBrainClicked()
     {
+        // Editor part
         if (Input.GetMouseButtonDown(0))
         {
+            _onMouseClick = true;
             RaycastHit hit;
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out hit, 20f))
             {
                 Brain clickedBrain = hit.collider.gameObject.GetComponent<Brain>();
-                if (clickedBrain != null)
+                if (clickedBrain != null && clickedBrain.CanBeThrown)
                 {
                     _selectedBrain = clickedBrain;
                     _selectedBrain.OnBrainPressed(GetBrainPositionByTouch());
@@ -119,17 +129,59 @@ public class BrainDepot : MonoBehaviour
         }
         if (Input.GetMouseButtonUp(0) && _selectedBrain != null)
         {
+            _onMouseClick = false;
             if (_selectedBrain.OnBrainReleased(GetBrainPositionByTouch(), TouchInsideBrainDepotArea()))
             {
                 Brains.Remove(_selectedBrain);
+				ActiveBrains.Add(_selectedBrain);
             }
             _selectedBrain = null;
         }
 
-        if (_selectedBrain != null)
+        if (_selectedBrain != null && _onMouseClick)
         {
             _selectedBrain.OnBrainMoved(GetBrainPositionByTouch());
         }
+
+        // touches part
+        if (Input.touchCount == 1)
+        {
+            Touch touch = Input.touches[0];
+            if (touch.phase == TouchPhase.Began)
+            {
+                RaycastHit hit;
+                Ray ray = Camera.main.ScreenPointToRay(Input.touches[0].position);
+                if (Physics.Raycast(ray, out hit, 20f))
+                {
+                    Brain clickedBrain = hit.collider.gameObject.GetComponent<Brain>();
+                    if (clickedBrain != null && clickedBrain.CanBeThrown)
+                    {
+                        _selectedBrain = clickedBrain;
+                        _selectedBrain.OnBrainPressed(GetBrainPositionByTouch());
+                    }
+                }
+            }
+            else if (touch.phase == TouchPhase.Stationary || touch.phase == TouchPhase.Moved)
+            {
+                if (_selectedBrain != null)
+                {
+                    _selectedBrain.OnBrainMoved(GetBrainPositionByTouch());
+                }
+            }
+            else if (touch.phase == TouchPhase.Ended && _selectedBrain != null)
+            {
+                if (_selectedBrain.OnBrainReleased(GetBrainPositionByTouch(), TouchInsideBrainDepotArea()))
+                {
+                    Brains.Remove(_selectedBrain);
+                }
+                _selectedBrain = null;
+            }
+        }
+    }
+
+    public void ResetSelectedBrain()
+    {
+        _selectedBrain = null;
     }
 
     void UpdateConveyorBeltBrainMovement()
