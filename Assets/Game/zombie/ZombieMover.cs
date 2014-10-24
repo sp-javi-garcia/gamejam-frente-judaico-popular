@@ -253,7 +253,9 @@ public class ZombieMover : MonoBehaviour
 	{
 		// Find the closest Obstacle
 		Vector3 velocityNorm = rigidbody.velocity.normalized;
-		Ray ray = new Ray(transform.position - velocityNorm * 2f, rigidbody.velocity.normalized);
+		Vector3 origin =transform.position -  velocityNorm * 0.5f;
+		origin.y += 1f;
+		Ray ray = new Ray(origin, rigidbody.velocity.normalized);
 
 		Vector3 steeringForce = Vector3.zero;
 
