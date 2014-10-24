@@ -15,6 +15,12 @@ public class Zombie : MonoBehaviour
 	void Awake()
 	{
 		_zombieAI = GetComponent<ZombieAI>();
+		_squad = transform.parent.GetComponent<ZombieSquad>();
+
+		if(_squad == null)
+		{
+			Debug.LogWarning("No Squad Found!!!");
+		}
 	}
 
 	void Start()

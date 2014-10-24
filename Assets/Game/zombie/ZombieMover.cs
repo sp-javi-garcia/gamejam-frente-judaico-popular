@@ -19,6 +19,7 @@ public class ZombieMover : MonoBehaviour
 	public float MaxVelocity = 10f;
 	public float ArrivingRadius = 10f;
 
+	float _rotationSpeed = 1f;
 
 	void Awake()
 	{
@@ -58,6 +59,13 @@ public class ZombieMover : MonoBehaviour
 		Vector3 newVelocity = rigidbody.velocity + seek * Time.deltaTime;
 
 		rigidbody.velocity = newVelocity;
+
+		// Rotate towards the velocity
+		Quaternion desiredQuat = Quaternion.LookRotation(newVelocity);
+		Quaternion newQuat = Quaternion.Slerp(transform.rotation, desiredQuat, Time.deltaTime * _rotationSpeed);
+		transform.rotation = newQuat;
+
+//		transform.LookAt(transform.position + newVelocity.normalized);
 	}
 
 //	Vector3 BoidSteering()
