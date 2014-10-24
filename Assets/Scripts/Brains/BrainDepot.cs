@@ -38,6 +38,11 @@ public class BrainDepot : MonoBehaviour
         return ConveyorBeltStartPoint.position + ((float) (index)) * (ConveyorBeltEndPoint.position - ConveyorBeltStartPoint.position) / kMaxBrains;
     }
 
+    public Vector3 GetBrainPositionByBrain(Brain brain)
+    {
+        return GetFinalBrainConveyorPosition(Brains.IndexOf(brain));
+    }
+
     IEnumerator StartSequence()
     {
         for (int i = 0; i < StartingBrains; ++i)
@@ -115,7 +120,7 @@ public class BrainDepot : MonoBehaviour
             if (Physics.Raycast(ray, out hit, 20f))
             {
                 Brain clickedBrain = hit.collider.gameObject.GetComponent<Brain>();
-                if (clickedBrain != null)
+                if (clickedBrain != null && clickedBrain.CanBeThrown)
                 {
                     _selectedBrain = clickedBrain;
                     _selectedBrain.OnBrainPressed(GetBrainPositionByTouch());
@@ -149,7 +154,7 @@ public class BrainDepot : MonoBehaviour
                 if (Physics.Raycast(ray, out hit, 20f))
                 {
                     Brain clickedBrain = hit.collider.gameObject.GetComponent<Brain>();
-                    if (clickedBrain != null)
+                    if (clickedBrain != null && clickedBrain.CanBeThrown)
                     {
                         _selectedBrain = clickedBrain;
                         _selectedBrain.OnBrainPressed(GetBrainPositionByTouch());
@@ -172,6 +177,11 @@ public class BrainDepot : MonoBehaviour
                 _selectedBrain = null;
             }
         }
+    }
+
+    public void ResetSelectedBrain()
+    {
+        _selectedBrain = null;
     }
 
     void UpdateConveyorBeltBrainMovement()
