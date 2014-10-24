@@ -17,21 +17,31 @@ public class BrainDepot : MonoBehaviour
     public float AddBrainTime = 10f;
     float kDelayBetweenStartBrains = 0.5f;
 
-    public List<GameObject> BrainSpots;
     public List<Brain> Brains = new List<Brain>();
+    public Transform ConveyorBeltStartPoint;
+    public Transform ConveyorBeltEndPoint;
+    public float ConveyorSpeed;
 
     bool _startSequenceCompleted = false;
+
+    const int kMaxBrains = 7;
 
     void Start()
     {
         StartCoroutine(StartSequence());
     }
 
+    Vector3 GetFinalBrainConveyorPosition(int index)
+    {
+        return ConveyorBeltStartPoint.position + ((float) (index)) * (ConveyorBeltEndPoint.position - ConveyorBeltStartPoint.position) / kMaxBrains;
+    }
+
     IEnumerator StartSequence()
     {
         for (int i = 0; i < StartingBrains; ++i)
         {
-            AddBrain();
+            Brain starterBrain = AddBrain();
+            starterBrain.transform.position = GetFinalBrainConveyorPosition(i);
             yield return new WaitForSeconds(kDelayBetweenStartBrains);
         }
         _timeUntilNextBrain = AddBrainTime;
@@ -57,14 +67,16 @@ public class BrainDepot : MonoBehaviour
         return BrainPrefabs[0];
     }
 
-    void AddBrain()
+    Brain AddBrain()
     {
-        if (Brains.Count < BrainSpots.Count)
+        if (Brains.Count < kMaxBrains)
         {
             BrainPrefab brainPrefab = ChooseRandomPrefab();
-            Brain brain = Brain.CreateBrain(brainPrefab, BrainSpots[Brains.Count]);
+            Brain brain = Brain.CreateBrain(brainPrefab, this, ConveyorBeltEndPoint.position);
             Brains.Add(brain);
+            return brain;
         }
+        return null;
     }
 
     Brain _selectedBrain;
@@ -120,9 +132,32 @@ public class BrainDepot : MonoBehaviour
         }
     }
 
+    void UpdateConveyorBeltBrainMovement()
+    {
+        for (int i = 0; i < Brains.Count; ++i)
+        {
+            Brain brain = Brains[i];
+            Vector3 finalPosition = GetFinalBrainConveyorPosition(i);
+            if (brain.transform.position != finalPosition)
+            {
+                float distance = Vector3.Distance(finalPosition, brain.transform.position);
+                float movementAmount = ConveyorSpeed * Time.deltaTime;
+                if (distance < movementAmount)
+                {
+                    brain.transform.position = finalPosition;
+                }
+                else
+                {
+                    Vector3 movementVector = Vector3.Normalize(finalPosition - brain.transform.position) * movementAmount;
+                    brain.transform.position += movementVector;
+                }
+            }
+        }
+    }
+
     void Update ()
     {
-        if (_startSequenceCompleted && Brains.Count < BrainSpots.Count)
+        if (_startSequenceCompleted && Brains.Count < kMaxBrains)
         {
             _timeUntilNextBrain -= Time.deltaTime;
             if (_timeUntilNextBrain <= 0f)
@@ -132,5 +167,6 @@ public class BrainDepot : MonoBehaviour
             }
         }
         CheckBrainClicked();
+        UpdateConveyorBeltBrainMovement();
     }
 }
