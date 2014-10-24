@@ -37,8 +37,6 @@ public class Overwhelming : MonoBehaviour
 
 			if(zombie != null && !CheckzombieWasOverwelmed(zombie))
 			{
-				Debug.Log("Zombie Being OverWheled!!");
-
 				_zombies.Add(new ZombieData(Time.timeSinceLevelLoad, zombie));
 				OverwelmZombie(zombie);
 			}
