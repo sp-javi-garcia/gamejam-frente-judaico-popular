@@ -60,6 +60,11 @@ public class ZombieMover : MonoBehaviour
 		rigidbody.velocity = newVelocity;
 	}
 
+	Vector3 BoidSteering()
+	{
+
+	}
+
 	Vector3 SeekSteering()
 	{
 		Vector3 desiredVelocity = _targetPosition - transform.position;
