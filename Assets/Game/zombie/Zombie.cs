@@ -6,6 +6,12 @@ public class Zombie : MonoBehaviour
 {
 	ZombieAI _zombieAI;
 
+	ZombieSquad _squad;
+	public ZombieSquad Squad
+	{
+		get { return _squad; }
+	}
+
 	void Awake()
 	{
 		_zombieAI = GetComponent<ZombieAI>();

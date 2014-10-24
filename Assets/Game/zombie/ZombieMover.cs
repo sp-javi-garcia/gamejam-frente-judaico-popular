@@ -14,11 +14,11 @@ public class ZombieMover : MonoBehaviour
 	State _state = State.IDLE;
 
 	Zombie _zombie;
-
 	Vector3 _targetPosition;
 
 	public float MaxVelocity = 10f;
 	public float ArrivingRadius = 10f;
+
 
 	void Awake()
 	{
@@ -60,10 +60,10 @@ public class ZombieMover : MonoBehaviour
 		rigidbody.velocity = newVelocity;
 	}
 
-	Vector3 BoidSteering()
-	{
-
-	}
+//	Vector3 BoidSteering()
+//	{
+//
+//	}
 
 	Vector3 SeekSteering()
 	{
