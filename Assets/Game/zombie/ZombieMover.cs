@@ -134,7 +134,7 @@ public class ZombieMover : MonoBehaviour
 		SteeringVelocity = Vector3.zero;
 		ObstacleForce = Truncate(CalculateObstacleSteering(), BoidParameters.MaxObstacleSpeed) * BoidParameters.ObstacleFactor;
 
-		if(ObstacleForce.magnitude > 1e-1f)
+		if(ObstacleForce.magnitude > 1e-1f || BoidForces.magnitude > 1e-1f)
 		{
 			SeekForce *= 0.25f;
 		}
