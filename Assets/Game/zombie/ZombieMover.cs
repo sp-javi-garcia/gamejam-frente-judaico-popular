@@ -10,6 +10,8 @@ public class BoidParameters
 	public float AttractionDistance = 600f;
 	[SerializeField]
 	public float AlginmentDistance = 30f;
+	[SerializeField]
+	public float MaxObstacleAheadDistance = 10f;
 
 	[SerializeField]
 	public float MaxSeparationSpeed = 5f;
@@ -17,9 +19,21 @@ public class BoidParameters
 	public float MaxAlginmentSpeed = 1f;
 	[SerializeField]
 	public float MaxAttractionSpeed = 1f;
-
 	[SerializeField]
 	public float MaxSeekSpeed = 1f;
+	[SerializeField]
+	public float MaxObstacleSpeed = 10f;
+    
+	[SerializeField]
+	public float SeparationFactor = 1f;
+	[SerializeField]
+	public float AlignmentFactor = 1f;
+	[SerializeField]
+	public float AttractionFactor = 1f;
+	[SerializeField]
+	public float SeekFactor = 1f;
+	[SerializeField]
+	public float ObstacleFactor = 1f;
 }
 
 [System.Serializable]
@@ -98,15 +112,22 @@ public class ZombieMover : MonoBehaviour
 	void SeekState()
 	{
 		Vector3 seekForce = SeekSteering();
-		seekForce = Truncate(seekForce, BoidParameters.MaxSeekSpeed);
+		seekForce = Truncate(seekForce, BoidParameters.MaxSeekSpeed) * BoidParameters.SeekFactor;
 
 		CalculateBoidForces();
 		Vector3 boidForces = Vector3.zero;
-		boidForces = Truncate(SeparationSteering, BoidParameters.MaxSeparationSpeed) + Truncate(AlignmentSteering, BoidParameters.MaxAlginmentSpeed) + Truncate (AttractionSteering, BoidParameters.MaxAttractionSpeed);
+		boidForces = Truncate(SeparationSteering, BoidParameters.MaxSeparationSpeed) * BoidParameters.SeparationFactor + Truncate(AlignmentSteering, BoidParameters.MaxAlginmentSpeed) * BoidParameters.AlignmentFactor + Truncate (AttractionSteering, BoidParameters.MaxAttractionSpeed) * BoidParameters.AttractionFactor;
 
-		Vector3 steeringForces = (seekForce + boidForces) * Time.deltaTime;
+		Vector3 steeringVelocity = Vector3.zero;
+		Vector3 obstacleForce = Truncate(CalculateObstacleSteering(), BoidParameters.MaxObstacleSpeed) * BoidParameters.ObstacleFactor;
 
-		Vector3 newVelocity = rigidbody.velocity + steeringForces;
+		if(obstacleForce.magnitude > 1e-1f)
+		{
+			seekForce *= 0.25f;
+		}
+		steeringVelocity += (seekForce + boidForces + obstacleForce) * Time.deltaTime;
+
+		Vector3 newVelocity = rigidbody.velocity + steeringVelocity;
 		newVelocity = Truncate (newVelocity, MovementParameters.MaxVelocity);
 		
 		rigidbody.velocity = newVelocity;
@@ -181,6 +202,7 @@ public class ZombieMover : MonoBehaviour
 			}
 			desiredSeparationVelocity /= _separationList.Count;
 
+			desiredSeparationVelocity = desiredSeparationVelocity.normalized * BoidParameters.MaxSeparationSpeed; // Normalize
 			SeparationSteering = desiredSeparationVelocity - rigidbody.velocity;
 		}
 
@@ -196,6 +218,7 @@ public class ZombieMover : MonoBehaviour
 			}
 			avgVelocity = avgVelocity / _alignmentList.Count;
 			desiredAlignmentVelocity = avgVelocity;
+			desiredAlignmentVelocity = desiredAlignmentVelocity.normalized * BoidParameters.MaxAlginmentSpeed; // Normalize
 
 			AlignmentSteering = desiredAlignmentVelocity - rigidbody.velocity;
 		}
@@ -212,23 +235,47 @@ public class ZombieMover : MonoBehaviour
 			}
 			avgPosition = avgPosition / _attractionList.Count;
 			desiredAttractiontVelocity = avgPosition - transform.position;
+			desiredAttractiontVelocity = desiredAttractiontVelocity.normalized * BoidParameters.MaxAttractionSpeed; // Normalize
 			
 			AttractionSteering = desiredAttractiontVelocity - rigidbody.velocity;
 		}
 	}
 
+	Vector3 CalculateObstacleSteering()
+	{
+		// Find the closest Obstacle
+		Ray ray = new Ray(transform.position, rigidbody.velocity.normalized);
+
+		Vector3 steeringForce = Vector3.zero;
+
+		RaycastHit hit;
+		if(Physics.Raycast(ray, out hit, BoidParameters.MaxObstacleAheadDistance, 1 << LayerMask.NameToLayer("obstacle")))
+	    {
+			float obstacleRadius = hit.collider.bounds.size.x;
+			obstacleRadius = obstacleRadius < hit.collider.bounds.size.y ? hit.collider.bounds.size.y : obstacleRadius;
+//			obstacleRadius *= 1.25f;
+
+			Vector3 desiredVelocity = (hit.point - hit.collider.gameObject.transform.position).normalized * obstacleRadius;
+			desiredVelocity.y = 0f;
+
+			steeringForce = desiredVelocity - rigidbody.velocity;
+		}
+
+		return steeringForce;
+	}
+
 	Vector3 SeekSteering()
 	{
 		Vector3 desiredVelocity = _targetPosition - transform.position;
-		desiredVelocity = desiredVelocity.normalized * MovementParameters.MaxVelocity;
-
+		desiredVelocity = desiredVelocity.normalized * BoidParameters.MaxSeekSpeed;
 		Vector3 seekForce = desiredVelocity - rigidbody.velocity;
 
 		float arriveFactor = 1f;
-		float desiredVelocityMag = desiredVelocity.magnitude;
-		if(desiredVelocityMag < MovementParameters.ArrivingRadius)
+		float distanceToTarget = (_targetPosition - transform.position).magnitude;
+
+		if(distanceToTarget < MovementParameters.ArrivingRadius)
 		{
-			arriveFactor = desiredVelocityMag / MovementParameters.ArrivingRadius;
+			arriveFactor = distanceToTarget / MovementParameters.ArrivingRadius;
 		}
 
 		seekForce = seekForce * arriveFactor;
