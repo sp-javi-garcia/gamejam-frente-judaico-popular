@@ -11,6 +11,8 @@ public class ZombieAI : MonoBehaviour
 
 		START_CHASING,
 		CHASING,
+
+		BEING_OVERWELMED,
 	}
 
 	State _state = State.IDLE;
@@ -19,6 +21,10 @@ public class ZombieAI : MonoBehaviour
 	ZombieMover _zombieMover;
 
 	Vector3 _target;
+
+	#region overwelm
+	Timer _overWhelmTimer = new Timer();
+	#endregion
 
 	void Awake()
 	{
@@ -39,20 +45,34 @@ public class ZombieAI : MonoBehaviour
 			break;
 		
 		case State.CHASING:
-			Chasing();
+			ChasingState();
+			break;
+			
+		case State.BEING_OVERWELMED:
+			BeingOverWelmedState();
 			break;
 		}
 	}
 
 	public void Seek(Vector3 targetPos)
 	{
+		if(_state == State.BEING_OVERWELMED)
+		{
+			return;
+		}
+
 		_target = targetPos;
 		_state = State.CHASING;
 	}
 
-	public void StartChasing()
+	public void BeingOverwhelm(Vector3 position, float force)
 	{
-		_state = State.CHASING;
+		_zombieMover.StopMovement();
+		rigidbody.AddExplosionForce(force, position, 3f, 1f, ForceMode.Impulse);
+
+		_overWhelmTimer.WaitForSeconds(1f);
+
+		_state = State.BEING_OVERWELMED;
 	}
 
 	#region States
@@ -61,10 +81,18 @@ public class ZombieAI : MonoBehaviour
 		// Do nothing
 	}
 
-	void Chasing()
+	void ChasingState()
 	{
 		// Find the closest obstacle and follow it!
 		_zombieMover.Seek(_target);
+	}
+
+	void BeingOverWelmedState()
+	{
+		if(_overWhelmTimer.IsFinished())
+		{
+			_state = State.CHASING;
+		}
 	}
 
 	#endregion States

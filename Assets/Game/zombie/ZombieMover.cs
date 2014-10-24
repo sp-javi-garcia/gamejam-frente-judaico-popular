@@ -97,6 +97,11 @@ public class ZombieMover : MonoBehaviour
 		_state = State.SEEK;
 	}
 
+	public void StopMovement()
+	{
+		_state = State.IDLE;
+	}
+
 	void Update()
 	{
 		switch (_state)

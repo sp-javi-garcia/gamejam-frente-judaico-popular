@@ -44,19 +44,14 @@ public class Zombie : MonoBehaviour
 		}
 	}
 
-	void Start()
-	{
-		_zombieAI.StartChasing();
-	}
-
-	public void StartChasing()
-	{
-		_zombieAI.StartChasing();
-	}
-
 	public void Seek(Vector3 targetPosition)
 	{
 		_zombieAI.Seek(targetPosition);
+	}
+
+	public void OnBeingOverwhelm(Vector3 position, float forceMagnitude)
+	{
+		_zombieAI.BeingOverwhelm(position, forceMagnitude);
 	}
 
 	void SetTwoLegMode()
