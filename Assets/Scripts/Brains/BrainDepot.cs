@@ -86,7 +86,7 @@ public class BrainDepot : MonoBehaviour
 
     Vector3 GetBrainPositionByTouch()
     {
-        Plane plane = new Plane(Vector3.up, new Vector3(0f, BrainFallHeight, 0f));
+        Plane plane = new Plane(Vector3.up, new Vector3(0f, transform.position.y, 0f));
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         float distance;
         if (plane.Raycast(ray, out distance))
@@ -103,6 +103,7 @@ public class BrainDepot : MonoBehaviour
 
     void CheckBrainClicked()
     {
+        // Editor part
         if (Input.GetMouseButtonDown(0))
         {
             RaycastHit hit;
