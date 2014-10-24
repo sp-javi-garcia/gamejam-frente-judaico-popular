@@ -44,6 +44,9 @@ public class Brain : MonoBehaviour
         case State.APPEARING:
             AppearingBehavior();
             break;
+        case State.DRAGGING:
+            DraggingBehavior();
+            break;
         case State.IDLE:
             IdleBehavior();
             break;
@@ -68,6 +71,11 @@ public class Brain : MonoBehaviour
         _appearingRemainingTime = kAppearTime;
     }
 
+    void SetDragging()
+    {
+        _state = State.DRAGGING;
+    }
+
     void SetDisappearing()
     {
         _state = State.DISAPPEARING;
@@ -81,6 +89,11 @@ public class Brain : MonoBehaviour
     void SetFalling()
     {
         _state = State.FALLING;
+    }
+
+    void DraggingBehavior()
+    {
+
     }
 
     void AppearingBehavior()
@@ -102,5 +115,32 @@ public class Brain : MonoBehaviour
 
     void IdleBehavior()
     {
+
+    }
+
+    Vector3 _startDragPosition;
+    public void OnBrainPressed(Vector3 startPosition)
+    {
+        if (_state == State.IDLE)
+        {
+            SetDragging();
+            _startDragPosition = transform.localPosition;
+        }
+    }
+
+    public void OnBrainMoved(Vector3 position)
+    {
+        transform.position = Vector3.Lerp(transform.position, position, 0.1f);
+    }
+
+    float kReturnTime = 0.5f;
+
+    public void OnBrainReleased(Vector3 endPosition)
+    {
+        iTween.MoveTo(gameObject, iTween.Hash("position", _startDragPosition,
+                                              "islocal", true,
+                                              "easetype", iTween.EaseType.easeOutExpo,
+                                              "time", kReturnTime));
+        Debug.Log("Released!");
     }
 }

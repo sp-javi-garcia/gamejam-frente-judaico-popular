@@ -67,7 +67,50 @@ public class BrainDepot : MonoBehaviour
         }
     }
 
+    Brain _selectedBrain;
+
     float _remainingTimeUntilNextBrain;
+    public float BrainFallHeight = 18f;
+
+    Vector3 GetBrainPositionByTouch()
+    {
+        Plane plane = new Plane(Vector3.up, new Vector3(0f, BrainFallHeight, 0f));
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        float distance;
+        if (plane.Raycast(ray, out distance))
+        {
+            return ray.GetPoint(distance);
+        }
+        return Vector3.zero;
+    }
+
+    void CheckBrainClicked()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            RaycastHit hit;
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out hit, 20f))
+            {
+                Brain clickedBrain = hit.collider.gameObject.GetComponent<Brain>();
+                if (clickedBrain != null)
+                {
+                    _selectedBrain = clickedBrain;
+                    _selectedBrain.OnBrainPressed(GetBrainPositionByTouch());
+                }
+            }
+        }
+        if (Input.GetMouseButtonUp(0) && _selectedBrain != null)
+        {
+            _selectedBrain.OnBrainReleased(GetBrainPositionByTouch());
+            _selectedBrain = null;
+        }
+
+        if (_selectedBrain != null)
+        {
+            _selectedBrain.OnBrainMoved(GetBrainPositionByTouch());
+        }
+    }
 
     void Update ()
     {
@@ -80,5 +123,6 @@ public class BrainDepot : MonoBehaviour
                 AddBrain();
             }
         }
+        CheckBrainClicked();
     }
 }
