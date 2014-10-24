@@ -4,11 +4,56 @@ ModelImporter:
   serializedVersion: 16
   fileIDToRecycleName:
     100000: //RootNode
+    100002: BON_Chest
+    100004: BON_Head
+    100006: BON_Hips
+    100008: BON_Jaw
+    100010: BON_LArm1
+    100012: BON_LArm2
+    100014: BON_LFoot
+    100016: BON_LHand
+    100018: BON_LLeg1
+    100020: BON_LLeg2
+    100022: BON_RArm1
+    100024: BON_RArm2
+    100026: BON_RFoot
+    100028: BON_RHand
+    100030: BON_RLeg1
+    100032: BON_RLeg2
+    100034: chr_zombie_base_01
+    100036: root
+    100038: chr_zombie_base_02
+    100040: chr_zombie_base_03
     400000: //RootNode
+    400002: BON_Chest
+    400004: BON_Head
+    400006: BON_Hips
+    400008: BON_Jaw
+    400010: BON_LArm1
+    400012: BON_LArm2
+    400014: BON_LFoot
+    400016: BON_LHand
+    400018: BON_LLeg1
+    400020: BON_LLeg2
+    400022: BON_RArm1
+    400024: BON_RArm2
+    400026: BON_RFoot
+    400028: BON_RHand
+    400030: BON_RLeg1
+    400032: BON_RLeg2
+    400034: chr_zombie_base_01
+    400036: root
+    400038: chr_zombie_base_02
+    400040: chr_zombie_base_03
     2300000: //RootNode
     3300000: //RootNode
     4300000: chr_zombie_base_01
+    4300002: chr_zombie_base_02
+    4300004: chr_zombie_base_03
     9500000: //RootNode
+    13700000: chr_zombie_base_01
+    13700002: chr_zombie_base_02
+    13700004: chr_zombie_base_03
   materials:
     importMaterials: 1
     materialName: 0
@@ -17,7 +62,6 @@ ModelImporter:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
     optimizeGameObjects: 0
-    motionNodeName: 
     animationCompression: 1
     animationRotationError: .5
     animationPositionError: .5
