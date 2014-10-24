@@ -77,6 +77,10 @@ public class ZombieMover : MonoBehaviour
 	public Vector3 SeparationSteering;
 	public Vector3 AlignmentSteering;
 	public Vector3 AttractionSteering;
+	public Vector3 ObstacleForce;
+	public Vector3 SeekForce;
+	public Vector3 SteeringVelocity;
+	public Vector3 BoidForces;
 
 	void Awake()
 	{
@@ -111,23 +115,23 @@ public class ZombieMover : MonoBehaviour
 
 	void SeekState()
 	{
-		Vector3 seekForce = SeekSteering();
-		seekForce = Truncate(seekForce, BoidParameters.MaxSeekSpeed) * BoidParameters.SeekFactor;
+		SeekForce = SeekSteering();
+		SeekForce = Truncate(SeekForce, BoidParameters.MaxSeekSpeed) * BoidParameters.SeekFactor;
 
 		CalculateBoidForces();
-		Vector3 boidForces = Vector3.zero;
-		boidForces = Truncate(SeparationSteering, BoidParameters.MaxSeparationSpeed) * BoidParameters.SeparationFactor + Truncate(AlignmentSteering, BoidParameters.MaxAlginmentSpeed) * BoidParameters.AlignmentFactor + Truncate (AttractionSteering, BoidParameters.MaxAttractionSpeed) * BoidParameters.AttractionFactor;
+		BoidForces = Vector3.zero;
+		BoidForces = Truncate(SeparationSteering, BoidParameters.MaxSeparationSpeed) * BoidParameters.SeparationFactor + Truncate(AlignmentSteering, BoidParameters.MaxAlginmentSpeed) * BoidParameters.AlignmentFactor + Truncate (AttractionSteering, BoidParameters.MaxAttractionSpeed) * BoidParameters.AttractionFactor;
 
-		Vector3 steeringVelocity = Vector3.zero;
-		Vector3 obstacleForce = Truncate(CalculateObstacleSteering(), BoidParameters.MaxObstacleSpeed) * BoidParameters.ObstacleFactor;
+		SteeringVelocity = Vector3.zero;
+		ObstacleForce = Truncate(CalculateObstacleSteering(), BoidParameters.MaxObstacleSpeed) * BoidParameters.ObstacleFactor;
 
-		if(obstacleForce.magnitude > 1e-1f)
+		if(ObstacleForce.magnitude > 1e-1f)
 		{
-			seekForce *= 0.25f;
+			SeekForce *= 0.25f;
 		}
-		steeringVelocity += (seekForce + boidForces + obstacleForce) * Time.deltaTime;
+		SteeringVelocity += (SeekForce + BoidForces + ObstacleForce) * Time.deltaTime;
 
-		Vector3 newVelocity = rigidbody.velocity + steeringVelocity;
+		Vector3 newVelocity = rigidbody.velocity + SteeringVelocity;
 		newVelocity = Truncate (newVelocity, MovementParameters.MaxVelocity);
 		
 		rigidbody.velocity = newVelocity;
@@ -253,7 +257,7 @@ public class ZombieMover : MonoBehaviour
 	    {
 			float obstacleRadius = hit.collider.bounds.size.x;
 			obstacleRadius = obstacleRadius < hit.collider.bounds.size.y ? hit.collider.bounds.size.y : obstacleRadius;
-//			obstacleRadius *= 1.25f;
+			obstacleRadius *= 0.60f;
 
 			Vector3 desiredVelocity = (hit.point - hit.collider.gameObject.transform.position).normalized * obstacleRadius;
 			desiredVelocity.y = 0f;
@@ -281,6 +285,21 @@ public class ZombieMover : MonoBehaviour
 		seekForce = seekForce * arriveFactor;
 
 		return seekForce;
+	}
+
+	void OnDrawGizmosSelected()
+	{
+		Gizmos.color = Color.red;
+		Gizmos.DrawLine(transform.position, transform.position + ObstacleForce);
+
+		Gizmos.color = Color.gray;
+		Gizmos.DrawLine(transform.position, transform.position + SeekForce);
+
+		Gizmos.color = Color.yellow;
+		Gizmos.DrawLine(transform.position, transform.position + BoidForces);
+
+		Gizmos.color = Color.blue;
+		Gizmos.DrawLine(transform.position, transform.position + SteeringVelocity);
 	}
 	#endregion states
 }
