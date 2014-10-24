@@ -19,6 +19,8 @@ public class Brain : MonoBehaviour
     State _state;
     CharacterController _characterController;
 
+	BrainDepot _depot;
+
     public static Brain CreateBrain(BrainPrefab brainPrefab, BrainDepot depot, Vector3 position)
     {
         GameObject brainGO = (GameObject)GameObject.Instantiate(Resources.Load(brainPrefab.Path));
@@ -31,6 +33,7 @@ public class Brain : MonoBehaviour
     {
         _characterController = GetComponent<CharacterController>();
         SetAppearing();
+		_depot = depot;
         transform.parent = depot.transform;
         transform.position = position;
         transform.localRotation = Quaternion.identity;
@@ -84,6 +87,8 @@ public class Brain : MonoBehaviour
 
     IEnumerator DoDisappear()
     {
+		_depot.ActiveBrains.Remove(this);
+
         iTween.ScaleTo(gameObject, iTween.Hash("scale", Vector3.zero,
                                                "easetype", iTween.EaseType.easeInBack,
                                                "time", 0.2));
