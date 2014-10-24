@@ -15,6 +15,7 @@ public class ZombieSquad : MonoBehaviour
 
 	BrainDepot _brainDepot;
 
+
 	void Awake ()
 	{
 		_zombies = GetComponentsInChildren<Zombie> ();

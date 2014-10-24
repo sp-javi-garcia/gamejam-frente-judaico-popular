@@ -124,7 +124,6 @@ public class Brain : MonoBehaviour
     Vector3 _fallingForce;
     void SetFalling(Vector3 force)
     {
-        Debug.Log("Falling " + force);
         _state = State.FALLING;
         _fallingForce = force;
         _fallingTime = 0f;
@@ -234,14 +233,38 @@ public class Brain : MonoBehaviour
                                               "time", kReturnTime));
         _depot.ResetSelectedBrain();
     }
-    
+
+    Vector3 FixThrowForce(Vector3 throwForce)
+    {
+        float zCorrectionByPosition = transform.position.z - _depot.transform.position.z;
+         
+        if (throwForce.z > -1f)
+            throwForce.z = Mathf.Max(0f, throwForce.z);
+        throwForce.z = Mathf.Min(14.5f - zCorrectionByPosition , throwForce.z);
+        Debug.Log("Throw force: " + throwForce + " transform.position.x = " + transform.position.x + " - _depot.transform.position.x = " + _depot.transform.position.x);
+        float xCorrectionByPosition = 0.2f * (transform.position.x - _depot.transform.position.x);
+        if (throwForce.x < 0f)
+        {
+            // -5 xcorrection
+            xCorrectionByPosition = xCorrectionByPosition < 0f ? 0f : xCorrectionByPosition;
+            throwForce.x = Mathf.Max(-11f - xCorrectionByPosition, throwForce.x);
+        }
+        else
+        {
+            xCorrectionByPosition = xCorrectionByPosition > 0f ? 0f : xCorrectionByPosition;
+            throwForce.x = Mathf.Min(11f - xCorrectionByPosition, throwForce.x);
+        }
+
+
+        return throwForce;
+    }
+
     float kReturnTime = 0.5f;
     public bool OnBrainReleased(Vector3 endPosition, bool overBrainDepot)
     {
         AddSample(endPosition - transform.position);
-        Vector3 throwForce = GetThrowForce();
-        if (throwForce.z > -1f)
-            throwForce.z = Mathf.Max(0f, throwForce.z);
+        Vector3 throwForce = FixThrowForce(GetThrowForce());
+
         if (overBrainDepot || throwForce.z < 0f)
         {
             ReturnToDepot();
