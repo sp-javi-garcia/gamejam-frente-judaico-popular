@@ -18,6 +18,7 @@ public class BrainDepot : MonoBehaviour
     float kDelayBetweenStartBrains = 0.5f;
 
     public List<Brain> Brains = new List<Brain>();
+	public List<Brain> ActiveBrains = new List<Brain>();
     public Transform ConveyorBeltStartPoint;
     public Transform ConveyorBeltEndPoint;
     public float ConveyorSpeed;
@@ -123,6 +124,7 @@ public class BrainDepot : MonoBehaviour
             if (_selectedBrain.OnBrainReleased(GetBrainPositionByTouch(), TouchInsideBrainDepotArea()))
             {
                 Brains.Remove(_selectedBrain);
+				ActiveBrains.Add(_selectedBrain);
             }
             _selectedBrain = null;
         }
