@@ -12,6 +12,8 @@ public class BoidParameters
 	public float AlginmentDistance = 30f;
 	[SerializeField]
 	public float MaxObstacleAheadDistance = 10f;
+	[SerializeField]
+	public float MaxObstacleRadius = 3f;
 
 	[SerializeField]
 	public float MaxSeparationSpeed = 5f;
@@ -59,16 +61,18 @@ public class ZombieMover : MonoBehaviour
 		SEEK
 	}
 
+	public bool EnableDebug = false;
+
 	State _state = State.IDLE;
 
 	Zombie _zombie;
 	Vector3 _targetPosition;
 
 	[SerializeField]
-	MovementParameters MovementParameters;
+	public MovementParameters MovementParameters;
 
 	[SerializeField]
-	BoidParameters BoidParameters;
+	public BoidParameters BoidParameters;
 
 	List<Zombie> _separationList = new List<Zombie>();
 	List<Zombie> _alignmentList = new List<Zombie>();
@@ -248,7 +252,8 @@ public class ZombieMover : MonoBehaviour
 	Vector3 CalculateObstacleSteering()
 	{
 		// Find the closest Obstacle
-		Ray ray = new Ray(transform.position, rigidbody.velocity.normalized);
+		Vector3 velocityNorm = rigidbody.velocity.normalized;
+		Ray ray = new Ray(transform.position - velocityNorm * 2f, rigidbody.velocity.normalized);
 
 		Vector3 steeringForce = Vector3.zero;
 
@@ -259,13 +264,29 @@ public class ZombieMover : MonoBehaviour
 			obstacleRadius = obstacleRadius < hit.collider.bounds.size.y ? hit.collider.bounds.size.y : obstacleRadius;
 			obstacleRadius *= 0.60f;
 
-			Vector3 desiredVelocity = (hit.point - hit.collider.gameObject.transform.position).normalized * obstacleRadius;
+			//Vector3 desiredVelocity = (hit.point - hit.collider.gameObject.transform.position).normalized * obstacleRadius;
+			Vector3 desiredVelocity = CalculatePerpendicularVectorToObstacle(hit.collider.gameObject.transform.position, hit.point) * obstacleRadius;
 			desiredVelocity.y = 0f;
 
 			steeringForce = desiredVelocity - rigidbody.velocity;
 		}
-
 		return steeringForce;
+	}
+
+	Vector3 CalculatePerpendicularVectorToObstacle(Vector3 obstaclePosition, Vector3 hitPoint)
+	{
+		Vector3 dirObstacleHitPoint = (hitPoint - obstaclePosition).normalized;
+		Vector3 dirToObstacle = (obstaclePosition - transform.position).normalized;
+		Vector3 right = new Vector3(dirToObstacle.z, 0f, -dirToObstacle.x);
+
+		if(dirObstacleHitPoint.sqrMagnitude == 0f)
+		{
+			dirObstacleHitPoint = right;
+        }
+
+		Vector3 perpendicularToObstacle = Vector3.Dot(right, dirObstacleHitPoint) * right;
+
+		return perpendicularToObstacle.normalized;
 	}
 
 	Vector3 SeekSteering()
@@ -287,8 +308,13 @@ public class ZombieMover : MonoBehaviour
 		return seekForce;
 	}
 
-	void OnDrawGizmosSelected()
+	void OnDrawGizmos()
 	{
+		if(!EnableDebug)
+		{
+			return;
+		}
+
 		Gizmos.color = Color.red;
 		Gizmos.DrawLine(transform.position, transform.position + ObstacleForce);
 
