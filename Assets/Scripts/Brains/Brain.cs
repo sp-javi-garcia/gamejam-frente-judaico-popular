@@ -17,6 +17,7 @@ public class Brain : MonoBehaviour
     }
 
     State _state;
+    CharacterController _characterController;
 
     public static Brain CreateBrain(BrainPrefab brainPrefab, BrainDepot depot, Vector3 position)
     {
@@ -28,6 +29,7 @@ public class Brain : MonoBehaviour
 
     void Init(Vector3 position, BrainDepot depot)
     {
+        _characterController = GetComponent<CharacterController>();
         SetAppearing();
         transform.parent = depot.transform;
         transform.position = position;
@@ -103,13 +105,12 @@ public class Brain : MonoBehaviour
         _state = State.WAITING;
     }
 
+    Vector3 _fallingForce;
     void SetFalling(Vector3 force)
     {
         _state = State.FALLING;
-        Rigidbody body = gameObject.AddComponent<Rigidbody>();
-        body.mass = 50f;
-        body.velocity = force;
-        body.AddForce(force);
+        _fallingForce = force;
+        _fallingTime = 0f;
         //body.constraints = RigidbodyConstraints.FreezeRotation;
     }
 
@@ -132,10 +133,17 @@ public class Brain : MonoBehaviour
     }
 
     float _fallingTimeout = 1f;
+    float _fallingTime = 0f;
     void FallingBehavior()
     {
+        _fallingTime += Time.deltaTime;
+        _characterController.Move((2f * _fallingForce + (40 * _fallingTime * Vector3.down)) * Time.deltaTime);
+        //_fallingForce = Vector3.Lerp(_fallingForce, Vector3.zero, 0.1f);
+        
         if (Physics.Raycast (transform.position, -Vector3.up, 1f))
         {
+            _fallingForce = Vector3.Lerp(_fallingForce, Vector3.zero, 0.25f);
+            //_fallingForce = Vector3.zero;
             _fallingTimeout -= Time.deltaTime;
         }
         else
@@ -150,7 +158,7 @@ public class Brain : MonoBehaviour
         }
     }
 
-    const int kMaxSamples = 20;
+    const int kMaxSamples = 5;
     Vector3[] _throwSamples = new Vector3[kMaxSamples];
     int _throwSampleIndex = 0;
     int _throwSamplesCount = 0;
@@ -162,7 +170,7 @@ public class Brain : MonoBehaviour
         _throwSamplesCount++;
     }
 
-    public float kForceFactor = 10f;
+    public float kForceFactor = 600f;
     Vector3 GetThrowForce()
     {
         _throwSamplesCount = _throwSamplesCount < kMaxSamples ? _throwSamplesCount : kMaxSamples;
