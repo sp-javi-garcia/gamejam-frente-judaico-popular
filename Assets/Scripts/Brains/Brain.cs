@@ -17,8 +17,17 @@ public class Brain : MonoBehaviour
     }
 
     State _state;
+    CharacterController _characterController;
 
 	BrainDepot _depot;
+
+    public bool CanBeThrown
+    {
+        get
+        {
+            return _state == State.WAITING;
+        }
+    }
 
     public static Brain CreateBrain(BrainPrefab brainPrefab, BrainDepot depot, Vector3 position)
     {
@@ -30,6 +39,7 @@ public class Brain : MonoBehaviour
 
     void Init(Vector3 position, BrainDepot depot)
     {
+        _characterController = GetComponent<CharacterController>();
         SetAppearing();
 		_depot = depot;
         transform.parent = depot.transform;
@@ -72,9 +82,12 @@ public class Brain : MonoBehaviour
         _appearingRemainingTime = kAppearTime;
     }
 
+    float _remainingDraggingTime;
+    const float kMaxDraggingTime = 0.5f;
     void SetDragging()
     {
         _state = State.DRAGGING;
+        _remainingDraggingTime = kMaxDraggingTime;
     }
 
     void SetDisappearing()
@@ -108,19 +121,24 @@ public class Brain : MonoBehaviour
         _state = State.WAITING;
     }
 
+    Vector3 _fallingForce;
     void SetFalling(Vector3 force)
     {
+        Debug.Log("Falling " + force);
         _state = State.FALLING;
-        Rigidbody body = gameObject.AddComponent<Rigidbody>();
-        body.mass = 50f;
-        body.velocity = force;
-        body.AddForce(force);
+        _fallingForce = force;
+        _fallingTime = 0f;
         //body.constraints = RigidbodyConstraints.FreezeRotation;
     }
 
     void DraggingBehavior()
     {
-
+        _remainingDraggingTime -= Time.deltaTime;
+        if (_remainingDraggingTime <= 0f)
+        {
+            ReturnToDepot();
+            SetWaiting();
+        }
     }
 
     void AppearingBehavior()
@@ -137,15 +155,22 @@ public class Brain : MonoBehaviour
     }
 
     float _fallingTimeout = 1f;
+    float _fallingTime = 0f;
     void FallingBehavior()
     {
+        _fallingTime += Time.deltaTime;
+        _characterController.Move((2f * _fallingForce + (40 * _fallingTime * Vector3.down)) * Time.deltaTime);
+        //_fallingForce = Vector3.Lerp(_fallingForce, Vector3.zero, 0.1f);
+        
         if (Physics.Raycast (transform.position, -Vector3.up, 1f))
         {
+            _fallingForce = Vector3.Lerp(_fallingForce, Vector3.zero, 0.25f);
+            //_fallingForce = Vector3.zero;
             _fallingTimeout -= Time.deltaTime;
         }
         else
         {
-            rigidbody.AddForce(WindController.WindForce);
+            //TODO: WIND!!!
             _fallingTimeout = 1f;
         }
 
@@ -155,7 +180,7 @@ public class Brain : MonoBehaviour
         }
     }
 
-    const int kMaxSamples = 20;
+    const int kMaxSamples = 5;
     Vector3[] _throwSamples = new Vector3[kMaxSamples];
     int _throwSampleIndex = 0;
     int _throwSamplesCount = 0;
@@ -167,7 +192,7 @@ public class Brain : MonoBehaviour
         _throwSamplesCount++;
     }
 
-    public float kForceFactor = 10f;
+    public float kForceFactor = 600f;
     Vector3 GetThrowForce()
     {
         _throwSamplesCount = _throwSamplesCount < kMaxSamples ? _throwSamplesCount : kMaxSamples;
@@ -188,13 +213,11 @@ public class Brain : MonoBehaviour
         }
     }
 
-    Vector3 _startDragPosition;
     public void OnBrainPressed(Vector3 startPosition)
     {
-        if (_state == State.IDLE)
+        if (_state == State.WAITING)
         {
             SetDragging();
-            _startDragPosition = transform.localPosition;
         }
     }
 
@@ -204,21 +227,29 @@ public class Brain : MonoBehaviour
         transform.position = Vector3.Lerp(transform.position, position, 0.3f);
     }
 
+    void ReturnToDepot()
+    {
+        iTween.MoveTo(gameObject, iTween.Hash("position", _depot.GetBrainPositionByBrain(this),
+                                              "easetype", iTween.EaseType.easeOutExpo,
+                                              "time", kReturnTime));
+        _depot.ResetSelectedBrain();
+    }
+    
     float kReturnTime = 0.5f;
     public bool OnBrainReleased(Vector3 endPosition, bool overBrainDepot)
     {
         AddSample(endPosition - transform.position);
-        if (overBrainDepot)
+        Vector3 throwForce = GetThrowForce();
+        if (throwForce.z > -1f)
+            throwForce.z = Mathf.Max(0f, throwForce.z);
+        if (overBrainDepot || throwForce.z < 0f)
         {
-            iTween.MoveTo(gameObject, iTween.Hash("position", _startDragPosition,
-                                                  "islocal", true,
-                                                  "easetype", iTween.EaseType.easeOutExpo,
-                                                  "time", kReturnTime));
+            ReturnToDepot();
             return false;
         }
         else
         {
-            SetFalling(GetThrowForce());
+            SetFalling(throwForce);
             _throwSamplesCount = 0;
             return true;
         }
