@@ -42,6 +42,9 @@ public class BoidParameters
 public class MovementParameters
 {
 	[SerializeField]
+	public float DefaultMaxVelocity = 10f;
+
+	[SerializeField]
 	public float MaxVelocity = 10f;
 
 	[SerializeField]

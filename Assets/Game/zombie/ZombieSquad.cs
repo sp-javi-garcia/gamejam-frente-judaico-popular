@@ -15,6 +15,7 @@ public class ZombieSquad : MonoBehaviour
 
 	BrainDepot _brainDepot;
 
+	float distanceToEatBrain = 5f;
 
 	void Awake ()
 	{
@@ -47,13 +48,35 @@ public class ZombieSquad : MonoBehaviour
 		if(!found)
 		{
 			position = _humanBase.transform.position;
+
+			for (int i = 0; i < _zombies.Length; ++i)
+			{
+				Zombie zombie = _zombies[i];
+				
+				zombie.Seek(position);
+			}
 		}
-
-		for (int i = 0; i < _zombies.Length; ++i)
+		else
 		{
-			Zombie zombie = _zombies[i];
-
-			zombie.Seek(position);
+			float distanceToBrain = (AveragePosition - position).magnitude;
+			if(distanceToBrain < distanceToEatBrain)
+			{
+				for (int i = 0; i < _zombies.Length; ++i)
+				{
+					Zombie zombie = _zombies[i];
+					
+					zombie.EatBrain();
+				}
+			}
+			else
+			{
+				for (int i = 0; i < _zombies.Length; ++i)
+				{
+					Zombie zombie = _zombies[i];
+					
+					zombie.SeekBrain(position);
+				}
+			}
 		}
 	}
 
