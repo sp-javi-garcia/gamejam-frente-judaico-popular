@@ -138,6 +138,11 @@ public class Brain : MonoBehaviour
         }
         else
         {
+            if (!Physics.Raycast (transform.position, -Vector3.up, 1f))
+            {
+                rigidbody.AddForce(WindController.WindForce);
+            }
+
             _fallingTimeout = 1f;
         }
 
@@ -188,7 +193,6 @@ public class Brain : MonoBehaviour
         else
         {
             SetFalling();
-            Debug.Log("Release!");
             return true;
         }
     }
