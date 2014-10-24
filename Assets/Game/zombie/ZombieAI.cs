@@ -67,6 +67,11 @@ public class ZombieAI : MonoBehaviour
 
 	public void BeingOverwhelm(Vector3 position, float force)
 	{
+		if(_state == State.BEING_OVERWELMED)
+		{
+			return;
+		}
+
 		_zombieMover.StopMovement();
 		rigidbody.AddExplosionForce(force, position, 3f, 1f, ForceMode.Impulse);
 
