@@ -29,6 +29,11 @@ public class ZombieAI : MonoBehaviour
 	Timer _overWhelmTimer = new Timer();
 	#endregion
 
+	ZombieCameraController _cameraController;
+
+	private static float _lastTimeZombieEat = 0f;
+	private static float _minTimeBetweenZoomEfect = 10f;
+
 	void Awake()
 	{
 		_zombie = GetComponent<Zombie>();
@@ -38,6 +43,8 @@ public class ZombieAI : MonoBehaviour
 		}
 
 		_zombieMover = GetComponent<ZombieMover>();
+
+		_cameraController = FindObjectOfType<ZombieCameraController>();
 	}
 
 	void Update()
@@ -182,6 +189,17 @@ public class ZombieAI : MonoBehaviour
 
 	void EatingBrainState()
 	{
+		if((Time.timeSinceLevelLoad - _lastTimeZombieEat) > _minTimeBetweenZoomEfect)
+		{
+			_cameraController.ZoomToPosition(_target, 0.3f);
+			_lastTimeZombieEat = Time.timeSinceLevelLoad;
+		}
+
+		Quaternion quat = Quaternion.LookRotation((_target - transform.position).normalized);
+		transform.rotation = quat;
+
+		_zombieMover.StopMovement();
+		_zombie.Animator.SetFloat("speed", 0f);
 		// Do nothing
 	}
 

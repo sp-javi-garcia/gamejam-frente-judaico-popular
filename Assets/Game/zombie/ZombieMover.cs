@@ -34,6 +34,7 @@ public class BoidParameters
 	public float AttractionFactor = 1f;
 	[SerializeField]
 	public float SeekFactor = 1f;
+	public float DefaultSeekFactor = 1f;
 	[SerializeField]
 	public float ObstacleFactor = 1f;
 }
@@ -52,6 +53,12 @@ public class MovementParameters
 
 	[SerializeField]
 	public float RotationSpeed = 1f;
+
+	[SerializeField]
+	public float DistanceToAccelerateInSeek = 10f;
+
+	[SerializeField]
+	public float AccelerationFactor = 5f;
 }
 
 [RequireComponent (typeof (Zombie))]
@@ -92,6 +99,8 @@ public class ZombieMover : MonoBehaviour
 	void Awake()
 	{
 		_zombie = GetComponent<Zombie>();
+
+		BoidParameters.DefaultSeekFactor = BoidParameters.SeekFactor;
 	}
 
 	public void Seek(Vector3 targetPos)
@@ -102,6 +111,7 @@ public class ZombieMover : MonoBehaviour
 
 	public void StopMovement()
 	{
+		rigidbody.velocity = Vector3.zero;
 		_state = State.IDLE;
 	}
 
@@ -307,10 +317,18 @@ public class ZombieMover : MonoBehaviour
 
 		float arriveFactor = 1f;
 		float distanceToTarget = (_targetPosition - transform.position).magnitude;
+		BoidParameters.SeekFactor = 1f;
 
 		if(distanceToTarget < MovementParameters.ArrivingRadius)
 		{
 			arriveFactor = distanceToTarget / MovementParameters.ArrivingRadius;
+		}
+		else if(distanceToTarget > MovementParameters.ArrivingRadius && distanceToTarget < MovementParameters.DistanceToAccelerateInSeek)
+		{
+			float factor = Mathf.Max(1f - ((distanceToTarget - MovementParameters.ArrivingRadius) / (MovementParameters.DistanceToAccelerateInSeek - MovementParameters.ArrivingRadius)), 2f);
+			factor = (factor + 1f) * MovementParameters.AccelerationFactor;
+
+			BoidParameters.SeekFactor *= Mathf.Max(BoidParameters.DefaultSeekFactor * factor, 1f);
 		}
 
 		seekForce = seekForce * arriveFactor;

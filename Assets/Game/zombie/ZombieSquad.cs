@@ -58,46 +58,48 @@ public class ZombieSquad : MonoBehaviour
 		}
 		else
 		{
-			float distanceToBrain = (AveragePosition - position).magnitude;
-			if(distanceToBrain < distanceToEatBrain)
-			{
-				for (int i = 0; i < _zombies.Length; ++i)
-				{
-					Zombie zombie = _zombies[i];
-					
-					zombie.EatBrain();
-				}
-			}
-			else
-			{
+//			float distanceToBrain = (AveragePosition - position).magnitude;
+//			if(distanceToBrain < distanceToEatBrain)
+//			{
+//				for (int i = 0; i < _zombies.Length; ++i)
+//				{
+//					Zombie zombie = _zombies[i];
+//					
+//					zombie.EatBrain();
+//				}
+//			}
+//			else
+//			{
 				for (int i = 0; i < _zombies.Length; ++i)
 				{
 					Zombie zombie = _zombies[i];
 					
 					zombie.SeekBrain(position);
 				}
-			}
+//			}
 		}
 	}
 
 	bool FindClosestBrainFromPosition(Vector3 position, out Vector3 foundPosition)
 	{
 		foundPosition = Vector3.zero;
+		float closestDist = float.MaxValue;
+		bool found = false;
 
 		for (int i = 0; i < _brainDepot.ActiveBrains.Count; ++i)
 		{
 			Brain brain = _brainDepot.ActiveBrains[i];
 
 			float distance = (brain.transform.position - position).magnitude;
-			if(distance < brain.Range)
+			if(distance < brain.Range && distance < closestDist)
 			{
+				found = true;
+				closestDist = distance;
 				foundPosition = brain.transform.position;
-
-				return true;
 			}
 		}
 
-		return false;
+		return found;
 	}
 
 	Vector3 CalculateSquadAvgPosition ()
