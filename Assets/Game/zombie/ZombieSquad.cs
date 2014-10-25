@@ -257,5 +257,9 @@ public class ZombieSquad : MonoBehaviour
     {
         _zombies.Remove(zombie);
         _deathZombies.Add(zombie);
+        if (_zombies.Count == 0)
+        {
+            GameController.Instance.OutOfZombies();
+        }
     }
 }

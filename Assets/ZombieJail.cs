@@ -23,8 +23,7 @@ public class ZombieJail : MonoBehaviour
 
 	public int _life = 50;
 
-	[SerializeField]
-	public float _openingTime = 2f;
+	public float _openingTime = 0.1f;
 
 	Timer _openingTimer = new Timer();
 
