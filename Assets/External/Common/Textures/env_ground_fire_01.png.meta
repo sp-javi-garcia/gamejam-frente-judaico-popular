@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: ad22ea74aaa52f340ba84327f98d528b
+guid: b59d72919eb0b924a8ffc955eea421c4
 TextureImporter:
   fileIDToRecycleName: {}
   serializedVersion: 2
@@ -41,10 +41,6 @@ TextureImporter:
   alphaIsTransparency: 0
   textureType: -1
   buildTargetSettings:
-  - buildTarget: Standalone
-    maxTextureSize: 1024
-    textureFormat: -1
-    compressionQuality: 50
   - buildTarget: iPhone
     maxTextureSize: 512
     textureFormat: -1
