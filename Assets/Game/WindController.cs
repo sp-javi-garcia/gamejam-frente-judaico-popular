@@ -19,7 +19,9 @@ public class WindController : MonoBehaviour
     {
         WindForce = new Vector3(Random.Range(-1f, 1f), 0f, Random.Range(-1f, 1f));
         WindForce.Normalize();
-        WindForce = WindForce * MaxWindForce; Random.Range(0f, MaxWindForce);
+        float windForceMagnitude = Random.Range(0f, MaxWindForce);
+        WindForce = WindForce * windForceMagnitude;
+        UI3dController.Instance.WindSpeedText.text = ((int)windForceMagnitude).ToString() + "km/h";
     }
 
     // Update is called once per frame
@@ -32,5 +34,6 @@ public class WindController : MonoBehaviour
             ChangeWindForce();
         }
         Arrow.transform.localRotation = Quaternion.Lerp(Arrow.transform.localRotation, Quaternion.LookRotation(WindForce), 0.1f);
+
     }
 }

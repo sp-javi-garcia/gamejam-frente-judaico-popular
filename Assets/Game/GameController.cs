@@ -77,5 +77,10 @@ public class GameController : MonoBehaviour
         {
             TimeUp();
         }
+
+        float remainingTime = LevelTime - _elapsedTime;
+        int minutes = (int)remainingTime / 60;
+        int seconds = (int)remainingTime % 60;
+        UI3dController.Instance.RemainingTimeText.text = minutes.ToString() + ":" + seconds.ToString("00");
     }
 }

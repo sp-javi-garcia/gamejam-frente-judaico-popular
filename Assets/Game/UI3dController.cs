@@ -1,11 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class UI3dController : MonoBehaviour
 {
     Vector3 _showPosition;
     Vector3 _hidePosition;
     BrainDepot _brainDepot;
+    public Text WindSpeedText;
+    public Text RemainingTimeText;
 
     public static UI3dController Instance { get; protected set; }
 
