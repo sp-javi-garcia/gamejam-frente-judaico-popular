@@ -6,6 +6,7 @@ using System.Collections.Generic;
 public class ZombieSquad : MonoBehaviour
 {
 	List<Zombie> _zombies;
+    List<Zombie> _deathZombies;
 
 	public ZombieSquadAudioManager AudioManager;
 
@@ -134,4 +135,15 @@ public class ZombieSquad : MonoBehaviour
 
 		Gizmos.DrawWireSphere(AveragePosition, 10f);
 	}
+
+    public void AddZombie(Zombie zombie)
+    {
+        _zombies.Add(zombie);
+    }
+
+    public void DeathZombie(Zombie zombie)
+    {
+        _zombies.Remove(zombie);
+        _deathZombies.Add(zombie);
+    }
 }
