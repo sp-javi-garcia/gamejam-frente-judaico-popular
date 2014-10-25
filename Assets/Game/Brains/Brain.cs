@@ -14,7 +14,8 @@ public class Brain : MonoBehaviour
         DRAGGING,
         FALLING,
         IDLE,
-        DISAPPEARING
+        DISAPPEARING,
+        EATING
     }
 
     State _state;
@@ -68,6 +69,33 @@ public class Brain : MonoBehaviour
         case State.FALLING:
             FallingBehavior();
             break;
+        case State.EATING:
+            EatingBehavior();
+            break;
+        }
+    }
+
+    const float kEatTime = 1f;
+    float _remainingEatTime;
+    bool _beingEat;
+    public void SetEating()
+    {
+        if (!_beingEat)
+        {
+            _beingEat = true;
+            //Particles or animation?
+            _remainingEatTime = kEatTime;
+            _state = State.EATING;
+        }
+    }
+
+    void EatingBehavior()
+    {
+        _characterController.Move(Vector3.down * 2f * Time.deltaTime);
+        _remainingEatTime -= Time.deltaTime;
+        if (_remainingEatTime <= 0f)
+        {
+            SetDisappearing();
         }
     }
 

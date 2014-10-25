@@ -26,12 +26,14 @@ public class ZombieAI : MonoBehaviour
 	ZombieMover _zombieMover;
 
 	Vector3 _target;
+    Brain _targetBrain;
 
 	#region hits
 	Timer _waitToAnimate = new Timer();
 
 	Timer _overWhelmTimer = new Timer();
 	Timer _pushTimer = new Timer();
+	Timer _biteTimer = new Timer();
 	#endregion
 
 	ZombieCameraController _cameraController;
@@ -54,8 +56,6 @@ public class ZombieAI : MonoBehaviour
 
 	void Update()
 	{
-//		Debug.Log("state: " + _state.ToString());
-
 		switch (_state)
 		{
 		case State.IDLE:
@@ -114,7 +114,7 @@ public class ZombieAI : MonoBehaviour
 		_state = State.CHASING;
 	}
 
-	public void SeekBrain(Vector3 targetPos)
+	public void SeekBrain(Vector3 targetPos, Brain brain)
 	{
 		if(!CanChangeState(State.CHASING_BRAIN))
 		{
@@ -127,20 +127,25 @@ public class ZombieAI : MonoBehaviour
 		}
 
 		OnPreChangeState(State.CHASING_BRAIN);
-
+        _targetBrain = brain;
 		_target = targetPos;
 		_state = State.CHASING_BRAIN;
 	}
 
 	public void EatBrain()
 	{
-		if(!CanChangeState(State.CHASING_BRAIN))
+		if(!CanChangeState(State.EATING_BRAIN))
 		{
 			return;
 		}
 
+		if(_waitToAnimate.IsFinished())
+		{
+			_zombie.SetAnimatorBool("eat", true);
+		}
+
 		_zombieMover.StopMovement();
-		//_zombie.Animator.SetBool("eat", true);
+
 		_state = State.EATING_BRAIN;
 	}
 
@@ -158,7 +163,7 @@ public class ZombieAI : MonoBehaviour
 	{
 		if(_state == State.EATING_BRAIN)
 		{
-			_zombie.Animator.SetBool("eat", false);
+			_zombie.SetAnimatorBool("eat", false);
 		}
 	}
 
@@ -207,7 +212,7 @@ public class ZombieAI : MonoBehaviour
 
 	void ChasingState()
 	{
-		_zombie.Animator.SetFloat("speed", rigidbody.velocity.magnitude / _zombieMover.MovementParameters.DefaultMaxVelocity);
+		_zombie.SetAnimatorFloat("speed", rigidbody.velocity.magnitude / _zombieMover.MovementParameters.DefaultMaxVelocity);
 
 		// Find the closest obstacle and follow it!
 		_zombieMover.Seek(_target);
@@ -219,13 +224,15 @@ public class ZombieAI : MonoBehaviour
 		if(distanceToTarget < 3f)
 		{
 			_zombieMover.StopMovement();
-			_zombie.Animator.SetFloat("speed", 0f);
+			_zombie.SetAnimatorFloat("speed", 0f);
 //			_zombie.Animator.SetBool("eat", true);
+			_waitToAnimate.WaitForSeconds(0.5f);
 			_state = State.EATING_BRAIN;
+            _targetBrain.SetEating();
 		}
 		else
 		{
-			_zombie.Animator.SetFloat("speed", rigidbody.velocity.magnitude / _zombieMover.MovementParameters.DefaultMaxVelocity);
+			_zombie.SetAnimatorFloat("speed", rigidbody.velocity.magnitude / _zombieMover.MovementParameters.DefaultMaxVelocity);
 		
 			// Find the closest obstacle and follow it!
 			_zombieMover.Seek(_target);
@@ -236,7 +243,7 @@ public class ZombieAI : MonoBehaviour
 	{
 		if(_waitToAnimate.IsFinished())
 		{
-			_zombie.Animator.SetBool("eat", true);
+			_zombie.SetAnimatorBool("eat", true);
 		}
 
 		if((Time.timeSinceLevelLoad - _lastTimeZombieEat) > _minTimeBetweenZoomEfect)
@@ -245,11 +252,17 @@ public class ZombieAI : MonoBehaviour
 			_lastTimeZombieEat = Time.timeSinceLevelLoad;
 		}
 
+		if(_biteTimer.IsFinished())
+		{
+			_biteTimer.WaitForSeconds(1f);
+			_zombie.AudioManager.PlayBite();
+		}
+
 		Quaternion quat = Quaternion.LookRotation((_target - transform.position).normalized);
 		transform.rotation = quat;
 
 		_zombieMover.StopMovement();
-		_zombie.Animator.SetFloat("speed", 0f);
+		_zombie.SetAnimatorFloat("speed", 0f);
 		// Do nothing
 	}
 
