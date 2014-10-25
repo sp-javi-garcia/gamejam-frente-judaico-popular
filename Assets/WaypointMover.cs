@@ -18,10 +18,10 @@ public class WaypointMover : MonoBehaviour
 	int _currentWaypointIdx = 0;
 
 	[SerializeField]
-	float _moveSpeed = 1f;
+	public float MoveSpeed = 1f;
 
 	[SerializeField]
-	float _rotationSpeed = 2f;
+	float RotationSpeed = 2f;
 
 	void Awake()
 	{
@@ -79,7 +79,7 @@ public class WaypointMover : MonoBehaviour
 	void MoveToWaypointState()
 	{
 		Vector3 targetPos = _waypoints[_currentWaypointIdx].position;
-		Vector3 currentPosition = Vector3.MoveTowards(transform.position, targetPos, _moveSpeed * Time.deltaTime);
+		Vector3 currentPosition = Vector3.MoveTowards(transform.position, targetPos, MoveSpeed * Time.deltaTime);
 
 		if((currentPosition - targetPos).sqrMagnitude < 1e-1f)
 		{
@@ -87,7 +87,7 @@ public class WaypointMover : MonoBehaviour
 		}
 
 		Quaternion quat = Quaternion.LookRotation(targetPos - transform.position);
-		Quaternion newQuat = Quaternion.Slerp(transform.rotation, quat, Time.deltaTime * _rotationSpeed);
+		Quaternion newQuat = Quaternion.Slerp(transform.rotation, quat, Time.deltaTime * RotationSpeed);
 
 		transform.rotation = newQuat;
 		transform.position = currentPosition;

@@ -147,9 +147,15 @@ public class ZombieMover : MonoBehaviour
 		SteeringVelocity = Vector3.zero;
 		ObstacleForce = Truncate(CalculateObstacleSteering(), BoidParameters.MaxObstacleSpeed) * BoidParameters.ObstacleFactor;
 
-		if(ObstacleForce.magnitude > 1e-1f || BoidForces.magnitude > 1e-1f)
+		if(ObstacleForce.magnitude > 1e-1f)
 		{
-			SeekForce *= 0.25f;
+//			SeekForce *= 0.25f;
+			SeekForce = Truncate(SeekForce, BoidParameters.MaxSeekSpeed) * BoidParameters.DefaultSeekFactor * 0.25f;
+			BoidForces *= 0.25f;
+		}
+		else if(BoidForces.magnitude > 1e-1f)
+		{
+			//SeekForce *= 0.25f;
 		}
 		SteeringVelocity += (SeekForce + BoidForces + ObstacleForce) * Time.deltaTime;
 
@@ -290,6 +296,21 @@ public class ZombieMover : MonoBehaviour
 
 			steeringForce = desiredVelocity - rigidbody.velocity;
 		}
+        else
+        {
+            Collider[] colliders = Physics.OverlapSphere(transform.position, BoidParameters.MaxObstacleRadius, 1 << LayerMask.NameToLayer("obstacle"));
+            if(colliders != null && colliders.Length > 0)
+            {
+                Collider collider = colliders[0];
+                float obstacleRadius = collider.bounds.size.x;
+                obstacleRadius = obstacleRadius < collider.bounds.size.y ? collider.bounds.size.y : obstacleRadius;
+                obstacleRadius *= 0.60f;
+
+				Vector3 desiredVelocity = (transform.position - collider.transform.position).normalized * obstacleRadius;
+                
+                steeringForce = desiredVelocity - rigidbody.velocity;
+            }
+        }
 		return steeringForce;
 	}
 
@@ -317,7 +338,7 @@ public class ZombieMover : MonoBehaviour
 
 		float arriveFactor = 1f;
 		float distanceToTarget = (_targetPosition - transform.position).magnitude;
-		BoidParameters.SeekFactor = 1f;
+		MovementParameters.MaxVelocity = MovementParameters.DefaultMaxVelocity;
 
 		if(distanceToTarget < MovementParameters.ArrivingRadius)
 		{
@@ -325,10 +346,15 @@ public class ZombieMover : MonoBehaviour
 		}
 		else if(distanceToTarget > MovementParameters.ArrivingRadius && distanceToTarget < MovementParameters.DistanceToAccelerateInSeek)
 		{
-			float factor = Mathf.Max(1f - ((distanceToTarget - MovementParameters.ArrivingRadius) / (MovementParameters.DistanceToAccelerateInSeek - MovementParameters.ArrivingRadius)), 2f);
-			factor = (factor + 1f) * MovementParameters.AccelerationFactor;
+			float factor = 2f;
+			if((MovementParameters.DistanceToAccelerateInSeek - MovementParameters.ArrivingRadius) > 0.1f)
+			{
+				factor = Mathf.Max(1f - ((distanceToTarget - MovementParameters.ArrivingRadius) / (MovementParameters.DistanceToAccelerateInSeek - MovementParameters.ArrivingRadius)), 2f);
+				factor = (factor + 1f) * MovementParameters.AccelerationFactor;
+			}
 
-			BoidParameters.SeekFactor *= Mathf.Max(BoidParameters.DefaultSeekFactor * factor, 1f);
+//			BoidParameters.SeekFactor *= Mathf.Max(BoidParameters.DefaultSeekFactor * factor, 1f);
+			MovementParameters.MaxVelocity = MovementParameters.DefaultMaxVelocity * Mathf.Min(Mathf.Max(factor, 1f), 3f);
 		}
 
 		seekForce = seekForce * arriveFactor;
@@ -344,13 +370,13 @@ public class ZombieMover : MonoBehaviour
 		}
 
 		Gizmos.color = Color.red;
-		Gizmos.DrawLine(transform.position, transform.position + ObstacleForce);
+		Gizmos.DrawLine(transform.position, transform.position + ObstacleForce * Time.deltaTime);
 
 		Gizmos.color = Color.gray;
-		Gizmos.DrawLine(transform.position, transform.position + SeekForce);
+		Gizmos.DrawLine(transform.position, transform.position + SeekForce * Time.deltaTime);
 
 		Gizmos.color = Color.yellow;
-		Gizmos.DrawLine(transform.position, transform.position + BoidForces);
+		Gizmos.DrawLine(transform.position, transform.position + BoidForces * Time.deltaTime);
 
 		Gizmos.color = Color.blue;
 		Gizmos.DrawLine(transform.position, transform.position + SteeringVelocity);

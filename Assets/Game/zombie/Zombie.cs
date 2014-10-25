@@ -121,14 +121,17 @@ public class Zombie : MonoBehaviour
 
 		case ZombieMode.TWO_LEGS:
 			_zombieMover.MovementParameters.MaxVelocity = TwoLegMaxVelocity;
+			_zombieMover.MovementParameters.DefaultMaxVelocity = TwoLegMaxVelocity;
 			break;
 
         case ZombieMode.ONE_LEGS:
 			_zombieMover.MovementParameters.MaxVelocity = OneLegMaxVelocity;
+			_zombieMover.MovementParameters.DefaultMaxVelocity = OneLegMaxVelocity;
 			break;
 
 		case ZombieMode.ZERO_LEGS:
 			_zombieMover.MovementParameters.MaxVelocity = ZeroLegMaxVelocity;
+			_zombieMover.MovementParameters.DefaultMaxVelocity = ZeroLegMaxVelocity;
             break;
         }
 	}
