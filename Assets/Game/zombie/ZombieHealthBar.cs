@@ -20,6 +20,7 @@ public class ZombieHealthBar : MonoBehaviour
     public void SetHealth(int value)
     {
         gameObject.SetActive(true);
+        value = value < 0 ? 0 : value;
         Vector3 scale = new Vector3((float)value/ 3f, 1f, 1f);
         iTween.ScaleTo(Bar.gameObject, iTween.Hash("scale", scale,
                                                "islocal", true,
