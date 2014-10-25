@@ -17,11 +17,20 @@ public class ZombieData
 [RequireComponent (typeof (WaypointMover))]
 public class Overwhelming : MonoBehaviour 
 {
+	enum AttackType
+	{
+		OVERWHELM,
+		PUSH
+	}
+
+	[SerializeField]
+	AttackType _attackType = AttackType.OVERWHELM;
+
 	[SerializeField]
 	float _timeToCleanHItted = 3f;
 
 	[SerializeField]
-	float _forceMagnitude = 10f;
+	float _forceMagnitude = 20f;
 
 	[SerializeField]
 	float _distanceToAccelerate = 10f;
@@ -55,8 +64,6 @@ public class Overwhelming : MonoBehaviour
 		KILLING
 	}
 
-
-
 	State _state = State.WALKING;
 
 	void Awake()
@@ -70,7 +77,6 @@ public class Overwhelming : MonoBehaviour
 	{
 		ClearOldZombies();
 
-		_mover.MoveSpeed = 1f;
 		bool squadIsClose = CheckSquadIsClose();
 		if(squadIsClose)
 		{
@@ -134,7 +140,15 @@ public class Overwhelming : MonoBehaviour
 				Vector3 dirToZombie = transform.position - other.gameObject.transform.position;
 
 				_zombies.Add(new ZombieData(Time.timeSinceLevelLoad, zombie));
-				OverwelmZombie(zombie, dirToZombie, realLifesToKill);
+
+				if(_attackType == AttackType.OVERWHELM)
+				{
+					OverwelmZombie(zombie, dirToZombie, realLifesToKill);
+				}
+				else
+				{
+					PushZombie(zombie, dirToZombie, realLifesToKill);
+				}
 			}
 		}
 	}
@@ -169,5 +183,10 @@ public class Overwhelming : MonoBehaviour
 	void OverwelmZombie(Zombie zombie, Vector3 impactDir, int lifesKilled)
 	{
 		zombie.OnBeingOverwhelm(transform.position, _forceMagnitude, lifesKilled, _range);
+	}
+
+	void PushZombie(Zombie zombie, Vector3 impactDir, int lifesKilled)
+	{
+		zombie.OnBeingPushed(transform.position, _forceMagnitude, lifesKilled, _range);
 	}
 }

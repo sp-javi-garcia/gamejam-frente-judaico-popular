@@ -220,12 +220,26 @@ public class ZombieAI : MonoBehaviour
 
 	public void BeingBurned()
 	{
-		_zombie.Life -= 1;
-		bool isDead = _zombie.Life <= 0;
+		if(_state == State.BEING_OVERWELMED || _state == State.BEING_PUSHED || _state == State.BEING_BURNED)
+		{
+			return;
+		}
 
-		_burningTimer.WaitForSeconds(2f);
+		_zombie.Life -= 1;
+
+		_burningTimer.WaitForSeconds(1.25f);
 
 		_state = State.BEING_BURNED;
+	}
+
+	public void StopBeingBurned()
+	{
+		if(_state != State.BEING_BURNED)
+		{
+			return;
+		}
+		
+		_state = State.CHASING;
 	}
 
 	#region States
@@ -327,9 +341,11 @@ public class ZombieAI : MonoBehaviour
 	{
 		if(_burningTimer.IsFinished())
 		{
+			_zombie.Life -= 1;
+
 			if(_zombie.Life > 0)
 			{
-				_state = State.CHASING;
+				_burningTimer.WaitForSeconds(1f);
 			}
 			else
 			{
