@@ -15,6 +15,8 @@ public class ZombieSquad : MonoBehaviour
 
 	BrainDepot _brainDepot;
 
+	float distanceToEatBrain = 5f;
+
 	void Awake ()
 	{
 		_zombies = GetComponentsInChildren<Zombie> ();
@@ -46,34 +48,58 @@ public class ZombieSquad : MonoBehaviour
 		if(!found)
 		{
 			position = _humanBase.transform.position;
+
+			for (int i = 0; i < _zombies.Length; ++i)
+			{
+				Zombie zombie = _zombies[i];
+				
+				zombie.Seek(position);
+			}
 		}
-
-		for (int i = 0; i < _zombies.Length; ++i)
+		else
 		{
-			Zombie zombie = _zombies[i];
-
-			zombie.Seek(position);
+//			float distanceToBrain = (AveragePosition - position).magnitude;
+//			if(distanceToBrain < distanceToEatBrain)
+//			{
+//				for (int i = 0; i < _zombies.Length; ++i)
+//				{
+//					Zombie zombie = _zombies[i];
+//					
+//					zombie.EatBrain();
+//				}
+//			}
+//			else
+//			{
+				for (int i = 0; i < _zombies.Length; ++i)
+				{
+					Zombie zombie = _zombies[i];
+					
+					zombie.SeekBrain(position);
+				}
+//			}
 		}
 	}
 
 	bool FindClosestBrainFromPosition(Vector3 position, out Vector3 foundPosition)
 	{
 		foundPosition = Vector3.zero;
+		float closestDist = float.MaxValue;
+		bool found = false;
 
 		for (int i = 0; i < _brainDepot.ActiveBrains.Count; ++i)
 		{
 			Brain brain = _brainDepot.ActiveBrains[i];
 
 			float distance = (brain.transform.position - position).magnitude;
-			if(distance < brain.Range)
+			if(distance < brain.Range && distance < closestDist)
 			{
+				found = true;
+				closestDist = distance;
 				foundPosition = brain.transform.position;
-
-				return true;
 			}
 		}
 
-		return false;
+		return found;
 	}
 
 	Vector3 CalculateSquadAvgPosition ()

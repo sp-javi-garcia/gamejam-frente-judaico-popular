@@ -133,6 +133,8 @@ public class BrainDepot : MonoBehaviour
             if (_selectedBrain.OnBrainReleased(GetBrainPositionByTouch(), TouchInsideBrainDepotArea()))
             {
                 Brains.Remove(_selectedBrain);
+
+				_selectedBrain.transform.parent = null;
 				ActiveBrains.Add(_selectedBrain);
             }
             _selectedBrain = null;

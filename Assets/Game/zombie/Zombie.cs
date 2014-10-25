@@ -7,6 +7,7 @@ public class Zombie : MonoBehaviour
 {
 	ZombieAI _zombieAI;
 	ZombieMover _zombieMover;
+	public Animator Animator;
 
 	enum ZombieMode
 	{
@@ -42,6 +43,34 @@ public class Zombie : MonoBehaviour
 		{
 			Debug.LogWarning("No Squad Found!!!");
 		}
+
+		Animator = GetAnimatorFromChildren(transform);
+		if(Animator == null)
+		{
+			Debug.LogWarning("no animator found");
+		}
+	}
+
+	Animator GetAnimatorFromChildren(Transform trans)
+	{
+		Animator anim = trans.GetComponent<Animator>();
+		if(anim != null)
+		{
+			return anim;
+		}
+		else
+		{
+			foreach (Transform child in trans)
+			{
+				anim = GetAnimatorFromChildren(child);
+				if(anim != null)
+				{
+					return anim;
+				}
+			}
+		}
+
+		return null;
 	}
 
 	public void Seek(Vector3 targetPosition)
@@ -49,9 +78,19 @@ public class Zombie : MonoBehaviour
 		_zombieAI.Seek(targetPosition);
 	}
 
+	public void SeekBrain(Vector3 targetPosition)
+	{
+		_zombieAI.SeekBrain(targetPosition);
+	}
+
 	public void OnBeingOverwhelm(Vector3 position, float forceMagnitude)
 	{
 		_zombieAI.BeingOverwhelm(position, forceMagnitude);
+	}
+
+	public void EatBrain()
+	{
+		_zombieAI.EatBrain();
 	}
 
 	void SetTwoLegMode()
