@@ -30,7 +30,7 @@ public class Overwhelming : MonoBehaviour
 	float _timeToCleanHItted = 3f;
 
 //	[SerializeField]
-	float _forceMagnitude = 100f;
+	float _forceMagnitude = 20f;
 
 	[SerializeField]
 	float _distanceToAccelerate = 10f;
@@ -44,7 +44,7 @@ public class Overwhelming : MonoBehaviour
 	[SerializeField]
 	int _maxLivesToKill = 7;
 
-//	[SerializeField]
+	[SerializeField]
 	public float _range = 20f;
 
 	int _livesKilled = 0;
