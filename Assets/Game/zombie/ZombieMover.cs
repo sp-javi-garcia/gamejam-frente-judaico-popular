@@ -111,7 +111,6 @@ public class ZombieMover : MonoBehaviour
 
 	public void StopMovement()
 	{
-		rigidbody.velocity = Vector3.zero;
 		_state = State.IDLE;
 	}
 
@@ -132,6 +131,7 @@ public class ZombieMover : MonoBehaviour
 	#region states
 	void IdleState()
 	{
+        rigidbody.velocity = Vector3.Lerp(rigidbody.velocity, Vector3.zero, 0.1f);
 		// Do nothing
 	}
 
