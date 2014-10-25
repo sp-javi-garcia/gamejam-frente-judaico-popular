@@ -55,8 +55,6 @@ public class ZombieAI : MonoBehaviour
 
 	void Update()
 	{
-//		Debug.Log("state: " + _state.ToString());
-
 		switch (_state)
 		{
 		case State.IDLE:
@@ -142,7 +140,7 @@ public class ZombieAI : MonoBehaviour
 
 		if(_waitToAnimate.IsFinished())
 		{
-			_zombie.Animator.SetBool("eat", true);
+			_zombie.SetAnimatorBool("eat", true);
 		}
 
 		_zombieMover.StopMovement();
@@ -164,7 +162,7 @@ public class ZombieAI : MonoBehaviour
 	{
 		if(_state == State.EATING_BRAIN)
 		{
-			_zombie.Animator.SetBool("eat", false);
+			_zombie.SetAnimatorBool("eat", false);
 		}
 	}
 
@@ -213,7 +211,7 @@ public class ZombieAI : MonoBehaviour
 
 	void ChasingState()
 	{
-		_zombie.Animator.SetFloat("speed", rigidbody.velocity.magnitude / _zombieMover.MovementParameters.DefaultMaxVelocity);
+		_zombie.SetAnimatorFloat("speed", rigidbody.velocity.magnitude / _zombieMover.MovementParameters.DefaultMaxVelocity);
 
 		// Find the closest obstacle and follow it!
 		_zombieMover.Seek(_target);
@@ -225,14 +223,14 @@ public class ZombieAI : MonoBehaviour
 		if(distanceToTarget < 3f)
 		{
 			_zombieMover.StopMovement();
-			_zombie.Animator.SetFloat("speed", 0f);
+			_zombie.SetAnimatorFloat("speed", 0f);
 //			_zombie.Animator.SetBool("eat", true);
 			_waitToAnimate.WaitForSeconds(0.5f);
 			_state = State.EATING_BRAIN;
 		}
 		else
 		{
-			_zombie.Animator.SetFloat("speed", rigidbody.velocity.magnitude / _zombieMover.MovementParameters.DefaultMaxVelocity);
+			_zombie.SetAnimatorFloat("speed", rigidbody.velocity.magnitude / _zombieMover.MovementParameters.DefaultMaxVelocity);
 		
 			// Find the closest obstacle and follow it!
 			_zombieMover.Seek(_target);
@@ -243,7 +241,7 @@ public class ZombieAI : MonoBehaviour
 	{
 		if(_waitToAnimate.IsFinished())
 		{
-			_zombie.Animator.SetBool("eat", true);
+			_zombie.SetAnimatorBool("eat", true);
 		}
 
 		if((Time.timeSinceLevelLoad - _lastTimeZombieEat) > _minTimeBetweenZoomEfect)
@@ -262,7 +260,7 @@ public class ZombieAI : MonoBehaviour
 		transform.rotation = quat;
 
 		_zombieMover.StopMovement();
-		_zombie.Animator.SetFloat("speed", 0f);
+		_zombie.SetAnimatorFloat("speed", 0f);
 		// Do nothing
 	}
 
