@@ -47,6 +47,7 @@ public class Brain : MonoBehaviour
         transform.parent = depot.transform;
         transform.position = position;
         transform.localRotation = Quaternion.identity;
+        BrainGO.transform.localScale = Vector3.one * Random.Range(1.3f, 1.88f);
     }
 
     // Update is called once per frame
