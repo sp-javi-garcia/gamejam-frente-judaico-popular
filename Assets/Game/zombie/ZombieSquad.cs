@@ -1,9 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+[RequireComponent (typeof (ZombieSquadAudioManager))]
 public class ZombieSquad : MonoBehaviour
 {
 	Zombie[] _zombies;
+
+	public ZombieSquadAudioManager AudioManager;
 
 	public Zombie [] Zombies 
 	{
@@ -19,6 +22,7 @@ public class ZombieSquad : MonoBehaviour
 
 	void Awake ()
 	{
+		AudioManager = GetComponent<ZombieSquadAudioManager>();
 		_zombies = GetComponentsInChildren<Zombie> ();
 		_brainDepot = FindObjectOfType<BrainDepot>();
 		if(_brainDepot == null)
