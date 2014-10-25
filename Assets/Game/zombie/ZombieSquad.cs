@@ -27,6 +27,8 @@ public class ZombieSquad : MonoBehaviour
 
 	private Timer _startTimer = new Timer();
 
+    public bool WaitingToStart = true;
+
 	void Awake ()
 	{
 		AudioManager = GetComponent<ZombieSquadAudioManager>();
@@ -58,6 +60,14 @@ public class ZombieSquad : MonoBehaviour
 
 	void SetTargetToZombies()
 	{
+        if (WaitingToStart)
+        {
+            for(int i = 0; i < Zombies.Count; ++i)
+            {
+                Zombies[i].gameObject.rigidbody.velocity = Vector3.zero;
+            }
+            return;
+        }
 		Vector3 position;
         Brain brain;
 		bool found = FindClosestBrainFromPosition(AveragePosition, out position, out brain);

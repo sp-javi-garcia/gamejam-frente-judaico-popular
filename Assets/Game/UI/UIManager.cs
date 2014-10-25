@@ -5,6 +5,7 @@ public class UIManager : MonoBehaviour {
 
     public YouWinPanel YouWinPanel;
     public YouLosePanel YouLosePanel;
+    public MessagePanel MessagePanel;
 
     public static UIManager Instance;
 
