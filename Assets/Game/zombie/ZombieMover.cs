@@ -354,7 +354,7 @@ public class ZombieMover : MonoBehaviour
 			}
 
 //			BoidParameters.SeekFactor *= Mathf.Max(BoidParameters.DefaultSeekFactor * factor, 1f);
-			MovementParameters.MaxVelocity = MovementParameters.DefaultMaxVelocity * Mathf.Min(Mathf.Max(factor, 1f), 3f);
+			MovementParameters.MaxVelocity = MovementParameters.DefaultMaxVelocity * Mathf.Max(factor, 1f);
 		}
 
 		seekForce = seekForce * arriveFactor;
