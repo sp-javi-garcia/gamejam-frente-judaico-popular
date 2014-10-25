@@ -48,7 +48,8 @@ public class ZombieSquad : MonoBehaviour
 	void SetTargetToZombies()
 	{
 		Vector3 position;
-		bool found = FindClosestBrainFromPosition(AveragePosition, out position);
+        Brain brain;
+		bool found = FindClosestBrainFromPosition(AveragePosition, out position, out brain);
 
 		if(!found)
 		{
@@ -79,15 +80,16 @@ public class ZombieSquad : MonoBehaviour
 				{
 					Zombie zombie = _zombies[i];
 					
-					zombie.SeekBrain(position);
+                    zombie.SeekBrain(position, brain);
 				}
 //			}
 		}
 	}
 
-	bool FindClosestBrainFromPosition(Vector3 position, out Vector3 foundPosition)
+	bool FindClosestBrainFromPosition(Vector3 position, out Vector3 foundPosition, out Brain foundBrain)
 	{
 		foundPosition = Vector3.zero;
+        foundBrain = null;
 		float closestDist = float.MaxValue;
 		bool found = false;
 
@@ -101,6 +103,7 @@ public class ZombieSquad : MonoBehaviour
 				found = true;
 				closestDist = distance;
 				foundPosition = brain.transform.position;
+                foundBrain = brain;
 			}
 		}
 

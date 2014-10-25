@@ -26,6 +26,7 @@ public class ZombieAI : MonoBehaviour
 	ZombieMover _zombieMover;
 
 	Vector3 _target;
+    Brain _targetBrain;
 
 	#region hits
 	Timer _waitToAnimate = new Timer();
@@ -114,7 +115,7 @@ public class ZombieAI : MonoBehaviour
 		_state = State.CHASING;
 	}
 
-	public void SeekBrain(Vector3 targetPos)
+	public void SeekBrain(Vector3 targetPos, Brain brain)
 	{
 		if(!CanChangeState(State.CHASING_BRAIN))
 		{
@@ -127,7 +128,7 @@ public class ZombieAI : MonoBehaviour
 		}
 
 		OnPreChangeState(State.CHASING_BRAIN);
-
+        _targetBrain = brain;
 		_target = targetPos;
 		_state = State.CHASING_BRAIN;
 	}
@@ -222,6 +223,7 @@ public class ZombieAI : MonoBehaviour
 			_zombie.Animator.SetFloat("speed", 0f);
 //			_zombie.Animator.SetBool("eat", true);
 			_state = State.EATING_BRAIN;
+            _targetBrain.SetEating();
 		}
 		else
 		{
