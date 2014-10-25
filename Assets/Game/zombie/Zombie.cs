@@ -140,12 +140,13 @@ public class Zombie : MonoBehaviour
 		_zombieAI = GetComponent<ZombieAI>();
 		_zombieMover = GetComponent<ZombieMover>();
 		_squad = transform.parent.GetComponent<ZombieSquad>();
-		AudioManager = GetComponent<ZombieAudioManager>();
 
 		if(_squad == null)
 		{
-			Debug.LogWarning("No Squad Found!!!");
+			_squad = FindObjectOfType<ZombieSquad>();
 		}
+
+		AudioManager = GetComponent<ZombieAudioManager>();
 
 		Invoke("UpdateParametersByMode", 0.1f);
 	}
@@ -170,6 +171,11 @@ public class Zombie : MonoBehaviour
 		}
 
 		return null;
+	}
+
+	public void LiberateJail(ZombieJail jail)
+	{
+		_zombieAI.LiberateJail(jail);
 	}
 
 	public void Seek(Vector3 targetPosition)

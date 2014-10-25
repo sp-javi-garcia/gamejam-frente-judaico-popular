@@ -20,6 +20,9 @@ public class ZombieAI : MonoBehaviour
 
 		BEING_BURNED,
 
+		SEEKING_JAIL,
+		LIBERATING_JAIL,
+
         DEATH
 	}
 
@@ -39,6 +42,8 @@ public class ZombieAI : MonoBehaviour
 	Timer _biteTimer = new Timer();
 	Timer _burningTimer = new Timer();
 	#endregion
+
+	ZombieJail _jail;
 
 	ZombieCameraController _cameraController;
 
@@ -99,6 +104,14 @@ public class ZombieAI : MonoBehaviour
         case State.DEATH:
             DeathState();
             break;
+
+		case State.SEEKING_JAIL:
+			SeekingJailState();
+			break;
+
+		case State.LIBERATING_JAIL:
+			LiberatingJailState();
+			break;
 		}
 	}
 
@@ -142,6 +155,35 @@ public class ZombieAI : MonoBehaviour
         _targetBrain = brain;
 		_target = targetPos;
 		_state = State.CHASING_BRAIN;
+	}
+
+	public void SeekingJailState()
+	{
+		float distanceToTarget = (_jail.transform.position - transform.position).magnitude;
+		if(distanceToTarget < 3f)
+		{
+			_zombieMover.StopMovement();
+			_zombie.SetAnimatorFloat("speed", 0f);
+			_waitToAnimate.WaitForSeconds(0.5f);
+
+			_state = State.LIBERATING_JAIL;
+		}
+		else
+		{
+			_zombie.SetAnimatorFloat("speed", rigidbody.velocity.magnitude / _zombieMover.MovementParameters.DefaultMaxVelocity);
+			
+			_zombieMover.Seek(_jail.transform.position);
+		}
+	}
+
+	public void LiberatingJailState()
+	{	
+		_jail.LiberateZombies();
+
+		if(_jail.IsLiberated())
+		{
+			_state = State.CHASING;
+		}
 	}
 
 	public void EatBrain()
@@ -240,6 +282,18 @@ public class ZombieAI : MonoBehaviour
 		}
 		
 		_state = State.CHASING;
+	}
+
+	public void LiberateJail(ZombieJail jail)
+	{
+		_jail = jail;
+
+		if(_state == State.BEING_OVERWELMED || _state == State.BEING_PUSHED)
+		{
+			return;
+		}
+
+		_state = State.SEEKING_JAIL;
 	}
 
 	#region States
