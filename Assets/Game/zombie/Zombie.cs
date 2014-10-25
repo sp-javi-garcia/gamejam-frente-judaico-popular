@@ -55,8 +55,6 @@ public class Zombie : MonoBehaviour
 
 	public void SetAnimatorBool(string param, bool value)
 	{
-		Debug.Log("Set Bool");
-
 		ZombieTwoLegs.SetBool(param, value);
 		ZombieOneLegs.SetBool(param, value);
 		ZombieZeroLegs.SetBool(param, value);
@@ -93,13 +91,12 @@ public class Zombie : MonoBehaviour
             default:
                 if (_life <= 0)
                 {
-//                    ZombieSquad.Instance.DeathZombie(this);
-//                    _zombieAI.SetDeath();
-//                    StartCoroutine(DeathAnimation());
+				SetZeroLegMode();
                 }
                 break;
             }
         }
+	}
 
     IEnumerator DeathAnimation()
     {
@@ -181,20 +178,15 @@ public class Zombie : MonoBehaviour
 		_zombieAI.SeekBrain(targetPosition, brain);
 	}
 
-	public void OnBeingOverwhelm(Vector3 position, float forceMagnitude, int lifesToKill)
+	public void OnBeingOverwhelm(Vector3 position, float forceMagnitude, int lifesToKill, float range = 3f)
 	{
-		_zombieAI.BeingOverwhelm(position, forceMagnitude, lifesToKill);
+		_zombieAI.BeingOverwhelm(position, forceMagnitude, lifesToKill, range);
 	}
 
-    public void OnBeingPushed(Vector3 position, float force, float range = 3f)
+    public void OnBeingPushed(Vector3 position, float force, int lifesToKill, float range = 3f)
     {
-        _zombieAI.BeingPushed(position, force, range);
+        _zombieAI.BeingPushed(position, force, lifesToKill, range);
     }
-
-	public void OnBeingPushed(Vector3 position, Vector3 force)
-	{
-		_zombieAI.BeingPushed(position, force);
-	}
 
 	public void EatBrain()
 	{
@@ -263,7 +255,6 @@ public class Zombie : MonoBehaviour
 	{
 		if(other.tag == "fire")
 		{
-			Debug.Log("fire");
 			_velocityFactor = FireVelocityFactor;
 			
 			_squad.AudioManager.PlayFireZoneClip();

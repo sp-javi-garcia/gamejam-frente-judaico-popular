@@ -16,6 +16,7 @@ public class MineTrap : MonoBehaviour
     public float InstaKillRange = 0.5f;
     public float MaxPushForce = 10f;
     public GameObject MineGO;
+    public GameObject ExplosionPrefab;
 
     State _state;
 
@@ -72,16 +73,19 @@ public class MineTrap : MonoBehaviour
             float distance = Vector3.Distance(zombie.transform.position, transform.position);
             if (distance < Range)
             {
-                zombie.OnBeingPushed(transform.position, MaxPushForce, Range);
-                if (distance < DamageRange)
-                {
-                    zombie.Life -= 1;
-                    // TODO: damage the zombie
-                }
-                if (distance < InstaKillRange)
-                {
-                    zombie.InstaKill();
-                }
+				int lifesToKill = 0;
+
+				if (distance < DamageRange)
+				{
+					lifesToKill = 1;
+					// TODO: damage the zombie
+				}
+				if (distance < InstaKillRange)
+				{
+					lifesToKill = 3;
+				}
+
+                zombie.OnBeingPushed(transform.position, MaxPushForce, lifesToKill, Range);
             }
         }
     }
@@ -89,6 +93,7 @@ public class MineTrap : MonoBehaviour
     IEnumerator Explode()
     {
         yield return new WaitForSeconds(0.5f);
+        GameObject fx = (GameObject)Instantiate(ExplosionPrefab, transform.position + Vector3.up * 2f, transform.rotation);
         // TODO: Explosion FX
         MineGO.SetActive(false);
         DamageZombies();
