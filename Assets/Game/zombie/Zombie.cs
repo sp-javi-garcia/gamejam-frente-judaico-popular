@@ -53,6 +53,8 @@ public class Zombie : MonoBehaviour
 		get { return _squad; }
 	}
 
+    ZombieHealthBar _healthBar;
+
 	public void SetAnimatorBool(string param, bool value)
 	{
 		ZombieTwoLegs.SetBool(param, value);
@@ -76,6 +78,8 @@ public class Zombie : MonoBehaviour
         }
         set
         {
+            if (_life != value)
+                _healthBar.SetHealth(value);
             _life = value;
             switch(_life)
             {
@@ -132,6 +136,7 @@ public class Zombie : MonoBehaviour
 
 	void Awake()
 	{
+        _healthBar = GetComponentInChildren<ZombieHealthBar>();
 		_zombieAI = GetComponent<ZombieAI>();
 		_zombieMover = GetComponent<ZombieMover>();
 		_squad = transform.parent.GetComponent<ZombieSquad>();
