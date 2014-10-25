@@ -138,6 +138,15 @@ public class Zombie : MonoBehaviour
 		}
 	}
 
+	void Update()
+	{
+		if(!_initAnimator)
+		{
+			_initAnimator = true;
+			UpdateParametersByMode();
+        }
+	}
+
 	Animator GetAnimatorFromChildren(Transform trans)
 	{
 		Animator anim = trans.GetComponent<Animator>();
@@ -217,12 +226,6 @@ public class Zombie : MonoBehaviour
 
 	void UpdateParametersByMode()
 	{
-		if(!_initAnimator)
-		{
-			_initAnimator = true;
-			UpdateParametersByMode();
-		}
-
 		switch (_mode)
 		{
 		case ZombieMode.TWO_LEGS:
