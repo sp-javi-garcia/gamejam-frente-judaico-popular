@@ -136,15 +136,8 @@ public class Zombie : MonoBehaviour
 		{
 			Debug.LogWarning("No Squad Found!!!");
 		}
-	}
 
-	void Update()
-	{
-		if(!_initAnimator)
-		{
-			_initAnimator = true;
-			UpdateParametersByMode();
-        }
+		Invoke("UpdateParametersByMode", 0.1f);
 	}
 
 	Animator GetAnimatorFromChildren(Transform trans)
@@ -229,24 +222,31 @@ public class Zombie : MonoBehaviour
 		switch (_mode)
 		{
 		case ZombieMode.TWO_LEGS:
-			ZombieOneLegs.gameObject.SetActive(false);
-			ZombieZeroLegs.gameObject.SetActive(false);
+			ZombieTwoLegs.gameObject.GetComponentInChildren<SkinnedMeshRenderer>().enabled = true;
+
+			ZombieOneLegs.gameObject.GetComponentInChildren<SkinnedMeshRenderer>().enabled = false;
+			ZombieZeroLegs.gameObject.GetComponentInChildren<SkinnedMeshRenderer>().enabled = false;
+
 
 			_zombieMover.MovementParameters.MaxVelocity = TwoLegMaxVelocity;
 			_zombieMover.MovementParameters.DefaultMaxVelocity = TwoLegMaxVelocity;
 			break;
 
         case ZombieMode.ONE_LEGS:
-			ZombieTwoLegs.gameObject.SetActive(false);
-			ZombieZeroLegs.gameObject.SetActive(false);
+			ZombieOneLegs.gameObject.GetComponentInChildren<SkinnedMeshRenderer>().enabled = true;
+
+			ZombieTwoLegs.gameObject.GetComponentInChildren<SkinnedMeshRenderer>().enabled = false;
+			ZombieZeroLegs.gameObject.GetComponentInChildren<SkinnedMeshRenderer>().enabled = false;
 
 			_zombieMover.MovementParameters.MaxVelocity = OneLegMaxVelocity;
 			_zombieMover.MovementParameters.DefaultMaxVelocity = OneLegMaxVelocity;
 			break;
 
 		case ZombieMode.ZERO_LEGS:
-			ZombieTwoLegs.gameObject.SetActive(false);
-			ZombieOneLegs.gameObject.SetActive(false);
+			ZombieZeroLegs.gameObject.GetComponentInChildren<SkinnedMeshRenderer>().enabled = true;
+
+			ZombieTwoLegs.gameObject.GetComponentInChildren<SkinnedMeshRenderer>().enabled = false;
+			ZombieOneLegs.gameObject.GetComponentInChildren<SkinnedMeshRenderer>().enabled = false;
 
 			_zombieMover.MovementParameters.MaxVelocity = ZeroLegMaxVelocity;
 			_zombieMover.MovementParameters.DefaultMaxVelocity = ZeroLegMaxVelocity;
