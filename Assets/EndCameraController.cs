@@ -6,7 +6,8 @@ public class EndCameraController : MonoBehaviour
     public enum State
     {
         TRANSLATION,
-        ROTATE_AROUND
+        ROTATE_AROUND,
+        ZOOM
     };
 
     Vector3 _offset;
@@ -41,7 +42,16 @@ public class EndCameraController : MonoBehaviour
         case State.ROTATE_AROUND:
             RotateAroundState();
             break;
+        case State.ZOOM:
+            ZoomState();
+            break;
         }
+    }
+
+    float _remainingZoomTime = 2f;
+    void ZoomState()
+    {
+
     }
 
     void CallEndTransitionCallback()
@@ -54,15 +64,12 @@ public class EndCameraController : MonoBehaviour
     float _translationTime = 0.5f;
     void TranslationState()
     {
-        transform.LookAt(_target);
-        _state = State.ROTATE_AROUND;
-        /*
         transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(_target - transform.position), 0.1f);
         _translationTime -= Time.deltaTime;
         if (_translationTime <= 0f)
         {
             _state = State.ROTATE_AROUND;
-        }*/
+        }
     }
 
     float _remainingRotateAroundTime = 3f;
@@ -73,7 +80,12 @@ public class EndCameraController : MonoBehaviour
         _remainingRotateAroundTime -= Time.deltaTime;
         if (_remainingRotateAroundTime <= 0f)
         {
-            CallEndTransitionCallback();
+            camera.fieldOfView = Mathf.Lerp(camera.fieldOfView, 15f, 0.007f);
+            _remainingZoomTime -= Time.deltaTime;
+            if (_remainingZoomTime <= 0f)
+            {
+                CallEndTransitionCallback();
+            }
         }
     }
 }
