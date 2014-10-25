@@ -5,6 +5,7 @@ public class Brain : MonoBehaviour
 {
     public float Range = 15f;
     public float Duration = 30f;
+    public GameObject BrainGO;
 
     public enum State
     {
@@ -127,9 +128,9 @@ public class Brain : MonoBehaviour
         _state = State.FALLING;
         _fallingForce = force;
         _fallingTime = 0f;
-        iTween.RotateTo(gameObject, iTween.Hash("rotation", Vector3.zero,
-                                      "easetype", iTween.EaseType.linear,
-                                      "time", 1f));
+        float sign = Random.Range(0, 2) == 0 ? -1f : 1f;
+        float sign2 = Random.Range(0, 2) == 0 ? -1f : 1f;
+        _fallingRotationVector = Random.Range(0, 2) == 0 ? new Vector3(0f, sign * 120f, sign2 * 720f) : new Vector3(0f, sign * 120f, sign2 * 720f);
         //body.constraints = RigidbodyConstraints.FreezeRotation;
     }
 
@@ -156,6 +157,7 @@ public class Brain : MonoBehaviour
     {
     }
 
+    Vector3 _fallingRotationVector = new Vector3(0f, 120f, 720f);
     float _fallingTimeout = 1f;
     float _fallingTime = 0f;
     void FallingBehavior()
@@ -174,6 +176,11 @@ public class Brain : MonoBehaviour
         {
             //TODO: WIND!!!
             _fallingTimeout = 1f;
+            Vector3 currentRotation = BrainGO.transform.rotation.eulerAngles;
+            BrainGO.transform.rotation = Quaternion.Euler(currentRotation.x + _fallingRotationVector.x * Time.deltaTime,
+                                                          currentRotation.y + _fallingRotationVector.y * Time.deltaTime,
+                                                          currentRotation.z + _fallingRotationVector.z * Time.deltaTime);
+
         }
 
         if (_fallingTimeout <= 0f)
