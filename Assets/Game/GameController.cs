@@ -14,6 +14,7 @@ public class GameController : MonoBehaviour
     // Use this for initialization
     void Start ()
     {
+        Application.LoadLevelAdditive("main_ui");
         Instance = this;
         _ui3dController = FindObjectOfType<UI3dController>();
         _zombieSquad = FindObjectOfType<ZombieSquad>();
@@ -57,12 +58,14 @@ public class GameController : MonoBehaviour
 
     void ShowYouLose()
     {
+        UIManager.Instance.YouLosePanel.Show();
         _ui3dController.Hide();
         Debug.Log("You lose");
     }
 
     void ShowYouWin()
     {
+        UIManager.Instance.YouWinPanel.Show();
         _ui3dController.Hide();
         Debug.Log("You win");
     }
@@ -72,7 +75,12 @@ public class GameController : MonoBehaviour
         _elapsedTime += Time.deltaTime;
         if (_elapsedTime >= LevelTime)
         {
-
+            TimeUp();
         }
+
+        float remainingTime = LevelTime - _elapsedTime;
+        int minutes = (int)remainingTime / 60;
+        int seconds = (int)remainingTime % 60;
+        UI3dController.Instance.RemainingTimeText.text = minutes.ToString() + ":" + seconds.ToString("00");
     }
 }
