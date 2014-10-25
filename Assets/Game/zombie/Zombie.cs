@@ -83,9 +83,14 @@ public class Zombie : MonoBehaviour
 		_zombieAI.SeekBrain(targetPosition);
 	}
 
-	public void OnBeingOverwhelm(Vector3 position, float forceMagnitude)
+	public void OnBeingOverwhelm(Vector3 position, Vector3 force)
 	{
-		_zombieAI.BeingOverwhelm(position, forceMagnitude);
+		_zombieAI.BeingOverwhelm(position, force);
+	}
+
+	public void OnBeingPushed(Vector3 position, Vector3 force)
+	{
+		_zombieAI.BeingPushed(position, force);
 	}
 
 	public void EatBrain()
