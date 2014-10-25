@@ -56,6 +56,8 @@ public class ZombieAI : MonoBehaviour
 
 	void Update()
 	{
+//		Debug.Log("state: " + _state.ToString());
+
 		switch (_state)
 		{
 		case State.IDLE:
@@ -167,7 +169,7 @@ public class ZombieAI : MonoBehaviour
 		}
 	}
 
-	public void BeingOverwhelm(Vector3 position, Vector3 force)
+	public void BeingOverwhelm(Vector3 position, float forceMagnitude)
 	{
 		if(_state == State.BEING_OVERWELMED || _state == State.BEING_PUSHED)
 		{
@@ -177,7 +179,7 @@ public class ZombieAI : MonoBehaviour
 		Debug.Log("Being Overwhelmed");
 
 		_zombieMover.StopMovement();
-		rigidbody.AddExplosionForce(force.magnitude, position, 3f, 1f, ForceMode.Impulse);
+		rigidbody.AddExplosionForce(forceMagnitude, position, 3f, 1f, ForceMode.Impulse);
 
 		_overWhelmTimer.WaitForSeconds(1f);
 
@@ -212,7 +214,7 @@ public class ZombieAI : MonoBehaviour
 
 	void ChasingState()
 	{
-		_zombie.SetAnimatorFloat("speed", rigidbody.velocity.magnitude / _zombieMover.MovementParameters.DefaultMaxVelocity);
+        _zombie.SetAnimatorFloat("speed", rigidbody.velocity.magnitude / _zombieMover.MovementParameters.DefaultMaxVelocity);
 
 		// Find the closest obstacle and follow it!
 		_zombieMover.Seek(_target);
@@ -232,7 +234,7 @@ public class ZombieAI : MonoBehaviour
 		}
 		else
 		{
-			_zombie.SetAnimatorFloat("speed", rigidbody.velocity.magnitude / _zombieMover.MovementParameters.DefaultMaxVelocity);
+            _zombie.SetAnimatorFloat("speed", rigidbody.velocity.magnitude / _zombieMover.MovementParameters.DefaultMaxVelocity);
 		
 			// Find the closest obstacle and follow it!
 			_zombieMover.Seek(_target);

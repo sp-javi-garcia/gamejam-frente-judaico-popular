@@ -45,6 +45,8 @@ public class Zombie : MonoBehaviour
 	public Animator ZombieOneLegs;
 	public Animator ZombieZeroLegs;
 
+	bool _initAnimator = false;
+
 	ZombieSquad _squad;
 	public ZombieSquad Squad
 	{
@@ -135,7 +137,7 @@ public class Zombie : MonoBehaviour
 			Debug.LogWarning("No Squad Found!!!");
 		}
 
-		UpdateParametersByMode();
+		Invoke("UpdateParametersByMode", 0.1f);
 	}
 
 	Animator GetAnimatorFromChildren(Transform trans)
@@ -170,9 +172,13 @@ public class Zombie : MonoBehaviour
 		_zombieAI.SeekBrain(targetPosition, brain);
 	}
 
-	public void OnBeingOverwhelm(Vector3 position, Vector3 force)
+	public void OnBeingOverwhelm(Vector3 position, float forceMagnitude, int livesToKill)
 	{
-		_zombieAI.BeingOverwhelm(position, force);
+		Life = Life -1;
+		if(Life > 0)
+		{
+			_zombieAI.BeingOverwhelm(position, forceMagnitude);
+		}
 	}
 
     public void OnBeingPushed(Vector3 position, float force, float range = 3f)
@@ -216,24 +222,31 @@ public class Zombie : MonoBehaviour
 		switch (_mode)
 		{
 		case ZombieMode.TWO_LEGS:
-			ZombieOneLegs.gameObject.SetActive(false);
-			ZombieZeroLegs.gameObject.SetActive(false);
+			ZombieTwoLegs.gameObject.GetComponentInChildren<SkinnedMeshRenderer>().enabled = true;
+
+			ZombieOneLegs.gameObject.GetComponentInChildren<SkinnedMeshRenderer>().enabled = false;
+			ZombieZeroLegs.gameObject.GetComponentInChildren<SkinnedMeshRenderer>().enabled = false;
+
 
 			_zombieMover.MovementParameters.MaxVelocity = TwoLegMaxVelocity;
 			_zombieMover.MovementParameters.DefaultMaxVelocity = TwoLegMaxVelocity;
 			break;
 
         case ZombieMode.ONE_LEGS:
-			ZombieTwoLegs.gameObject.SetActive(false);
-			ZombieZeroLegs.gameObject.SetActive(false);
+			ZombieOneLegs.gameObject.GetComponentInChildren<SkinnedMeshRenderer>().enabled = true;
+
+			ZombieTwoLegs.gameObject.GetComponentInChildren<SkinnedMeshRenderer>().enabled = false;
+			ZombieZeroLegs.gameObject.GetComponentInChildren<SkinnedMeshRenderer>().enabled = false;
 
 			_zombieMover.MovementParameters.MaxVelocity = OneLegMaxVelocity;
 			_zombieMover.MovementParameters.DefaultMaxVelocity = OneLegMaxVelocity;
 			break;
 
 		case ZombieMode.ZERO_LEGS:
-			ZombieTwoLegs.gameObject.SetActive(false);
-			ZombieOneLegs.gameObject.SetActive(false);
+			ZombieZeroLegs.gameObject.GetComponentInChildren<SkinnedMeshRenderer>().enabled = true;
+
+			ZombieTwoLegs.gameObject.GetComponentInChildren<SkinnedMeshRenderer>().enabled = false;
+			ZombieOneLegs.gameObject.GetComponentInChildren<SkinnedMeshRenderer>().enabled = false;
 
 			_zombieMover.MovementParameters.MaxVelocity = ZeroLegMaxVelocity;
 			_zombieMover.MovementParameters.DefaultMaxVelocity = ZeroLegMaxVelocity;

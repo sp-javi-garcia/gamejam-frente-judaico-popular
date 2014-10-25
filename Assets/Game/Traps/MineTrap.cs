@@ -16,6 +16,7 @@ public class MineTrap : MonoBehaviour
     public float InstaKillRange = 0.5f;
     public float MaxPushForce = 10f;
     public GameObject MineGO;
+    public GameObject ExplosionPrefab;
 
     State _state;
 
@@ -89,6 +90,7 @@ public class MineTrap : MonoBehaviour
     IEnumerator Explode()
     {
         yield return new WaitForSeconds(0.5f);
+        GameObject fx = (GameObject)Instantiate(ExplosionPrefab, transform.position + Vector3.up * 2f, transform.rotation);
         // TODO: Explosion FX
         MineGO.SetActive(false);
         DamageZombies();
