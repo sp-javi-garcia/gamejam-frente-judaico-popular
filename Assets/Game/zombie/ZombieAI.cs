@@ -17,6 +17,7 @@ public class ZombieAI : MonoBehaviour
 
 		BEING_OVERWELMED,
 		BEING_PUSHED,
+        DEATH
 	}
 
 	State _state = State.IDLE;
@@ -84,8 +85,22 @@ public class ZombieAI : MonoBehaviour
 		case State.BEING_PUSHED:
 			BeingPushedState();
 			break;
+
+        case State.DEATH:
+            DeathState();
+            break;
 		}
 	}
+
+    public void SetDeath()
+    {
+        _state = State.DEATH;
+    }
+
+    void DeathState()
+    {
+        // Do Nothing
+    }
 
 	public void Seek(Vector3 targetPos)
 	{
@@ -164,7 +179,12 @@ public class ZombieAI : MonoBehaviour
 		_state = State.BEING_OVERWELMED;
 	}
 
-	public void BeingPushed(Vector3 position, Vector3 force)
+    public void BeingPushed(Vector3 position, Vector3 force)
+    {
+        BeingPushed(position, force.magnitude);
+    }
+
+	public void BeingPushed(Vector3 position, float forceMagnitude, float radius = 3f)
 	{
 		if(_state == State.BEING_OVERWELMED || _state == State.BEING_PUSHED)
 		{
@@ -174,8 +194,7 @@ public class ZombieAI : MonoBehaviour
 		Debug.Log("Being Pushed");
 		
 		_zombieMover.StopMovement();
-		rigidbody.AddExplosionForce(force.magnitude, position, 3f, 1f, ForceMode.Impulse);
-		
+        rigidbody.AddExplosionForce(forceMagnitude, position, radius, 1f, ForceMode.Impulse);
 		_pushTimer.WaitForSeconds(1f);
 		_state = State.BEING_PUSHED;
 	}
