@@ -1,16 +1,50 @@
 fileFormatVersion: 2
-guid: 80ece89684120ed4c9cfe548405f3647
+guid: 1b18c8bfbb7628940b0e3fae7778b01a
 ModelImporter:
   serializedVersion: 16
   fileIDToRecycleName:
-    100000: //RootNode
-    400000: //RootNode
-    2300000: //RootNode
-    3300000: //RootNode
-    4300000: prp_brain_01
+    100000: BON_Chest
+    100002: BON_Head
+    100004: BON_Hips
+    100006: BON_Jaw
+    100008: BON_LArm1
+    100010: BON_LArm2
+    100012: BON_LFoot
+    100014: BON_LHand
+    100016: BON_LLeg1
+    100018: BON_LLeg2
+    100020: BON_RArm1
+    100022: BON_RArm2
+    100024: BON_RFoot
+    100026: BON_RHand
+    100028: BON_RLeg1
+    100030: BON_RLeg2
+    100032: //RootNode
+    100034: chr_zombie_base_02
+    100036: root
+    400000: BON_Chest
+    400002: BON_Head
+    400004: BON_Hips
+    400006: BON_Jaw
+    400008: BON_LArm1
+    400010: BON_LArm2
+    400012: BON_LFoot
+    400014: BON_LHand
+    400016: BON_LLeg1
+    400018: BON_LLeg2
+    400020: BON_RArm1
+    400022: BON_RArm2
+    400024: BON_RFoot
+    400026: BON_RHand
+    400028: BON_RLeg1
+    400030: BON_RLeg2
+    400032: //RootNode
+    400034: chr_zombie_base_02
+    400036: root
+    4300000: chr_zombie_base_02
     7400000: Take 001
     9500000: //RootNode
-    11100000: //RootNode
+    13700000: chr_zombie_base_02
   materials:
     importMaterials: 1
     materialName: 0
@@ -19,41 +53,13 @@ ModelImporter:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
     optimizeGameObjects: 0
-    animationCompression: 3
+    animationCompression: 1
     animationRotationError: .5
     animationPositionError: .5
     animationScaleError: .5
     animationWrapMode: 0
     extraExposedTransformPaths: []
-    clipAnimations:
-    - serializedVersion: 16
-      name: Take 001
-      takeName: Take 001
-      firstFrame: 0
-      lastFrame: 60
-      wrapMode: 0
-      orientationOffsetY: 0
-      level: 0
-      cycleOffset: 0
-      loop: 0
-      loopTime: 1
-      loopBlend: 0
-      loopBlendOrientation: 0
-      loopBlendPositionY: 0
-      loopBlendPositionXZ: 0
-      keepOriginalOrientation: 0
-      keepOriginalPositionY: 1
-      keepOriginalPositionXZ: 0
-      heightFromFeet: 0
-      mirror: 0
-      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
-      curves: []
-      events: []
-      transformMask:
-      - path: 
-        weight: 1
-      maskType: 0
-      maskSource: {instanceID: 0}
+    clipAnimations: []
     isReadable: 1
   meshes:
     lODScreenPercentages: []
