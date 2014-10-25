@@ -8,11 +8,19 @@ ModelImporter:
     100004: prp_cage_02
     100006: prp_cage_03
     100008: prp_cage_04
+    100010: ref1
+    100012: ref2
+    100014: ref3
+    100016: ref4
     400000: //RootNode
     400002: prp_cage_01
     400004: prp_cage_02
     400006: prp_cage_03
     400008: prp_cage_04
+    400010: ref1
+    400012: ref2
+    400014: ref3
+    400016: ref4
     2300000: prp_cage_01
     2300002: prp_cage_02
     2300004: prp_cage_03
@@ -25,6 +33,7 @@ ModelImporter:
     4300002: prp_cage_02
     4300004: prp_cage_01
     4300006: prp_cage_04
+    7400000: Take 001
     9500000: //RootNode
   materials:
     importMaterials: 1
@@ -45,7 +54,7 @@ ModelImporter:
     isReadable: 1
   meshes:
     lODScreenPercentages: []
-    globalScale: .00999999978
+    globalScale: 1
     meshCompression: 0
     addColliders: 0
     importBlendShapes: 1

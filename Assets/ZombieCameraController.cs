@@ -24,12 +24,16 @@ public class ZombieCameraController : MonoBehaviour
 	Vector3 _zoomPos;
 	float _zoomFactor;
 
+    public Transform[] IntroInterestingPoints;
+    public string[] IntroMessages;
+
 	enum State
 	{
 		DEFAULT,
-		ZOOM_TO_POSITION
+		ZOOM_TO_POSITION,
+        INTRO
 	}
-	State _state = State.DEFAULT;
+	State _state = State.INTRO;
 
 	Timer _waitInZoom = new Timer();
 
@@ -40,6 +44,12 @@ public class ZombieCameraController : MonoBehaviour
 
 	void Update()
 	{
+        if(!_isInit)
+        {
+            _distanceToCamera = _cameraToControl.transform.position - _squad.AveragePosition;
+            _isInit = true;
+        }
+
 		switch (_state)
 		{
 		case State.DEFAULT:
@@ -49,6 +59,9 @@ public class ZombieCameraController : MonoBehaviour
 		case State.ZOOM_TO_POSITION:
 			ZoomToPositionState();
 			break;
+        case State.INTRO:
+            IntroState();
+            break;
 		}
 	}
 
@@ -62,18 +75,66 @@ public class ZombieCameraController : MonoBehaviour
         UI3dController.Instance.Hide();
 	}
 
+    int _currentInterestingPoint = 0;
+    float _remainingInterestingPointWaitTime = 2f;
+    bool _shownIntroMessage = false;
+    void IntroState()
+    {
+        if (Input.GetMouseButtonDown(0) || Input.touchCount > 0)
+        {
+            _remainingInterestingPointWaitTime = 1f;
+            _currentInterestingPoint = 1000;
+            UIManager.Instance.MessagePanel.Hide();
+        }
+
+        if (_currentInterestingPoint < IntroInterestingPoints.Length)
+        {
+            Vector3 currentCameraDestination = IntroInterestingPoints[_currentInterestingPoint].position + _distanceToCamera * 0.5f;
+            float distance = Vector3.Distance(_cameraToControl.transform.position, currentCameraDestination);
+            _cameraToControl.transform.position = Vector3.Lerp(_cameraToControl.transform.position, currentCameraDestination, 3 * Time.deltaTime * _speed);
+            if (distance < 1f)
+            {
+                if (!_shownIntroMessage && _currentInterestingPoint <  IntroMessages.Length)
+                {
+                    _shownIntroMessage = true;
+                    UIManager.Instance.MessagePanel.Show(IntroMessages[_currentInterestingPoint]);
+                }
+                _remainingInterestingPointWaitTime -= Time.deltaTime;
+                if (_remainingInterestingPointWaitTime <= 0f)
+                {
+                    _shownIntroMessage = false;
+                    UIManager.Instance.MessagePanel.Hide();
+                    _remainingInterestingPointWaitTime = 1f;
+                    _currentInterestingPoint++;
+                }
+            }
+        }
+        else
+        {
+            _remainingInterestingPointWaitTime -= Time.deltaTime;
+            if (_remainingInterestingPointWaitTime <= 0f)
+            {
+                if (!_shownIntroMessage)
+                {
+                    _shownIntroMessage = true;
+                    UIManager.Instance.MessagePanel.Show("Ready?");
+                }
+            }
+            DefaultState();
+
+            if (_currentInterestingPoint == 1000)
+            {
+                _squad.WaitingToStart = false;
+                _state = State.DEFAULT;
+                UI3dController.Instance.Show();
+            }
+        }
+    }
+
 	void DefaultState()
 	{
-		if(!_isInit)
-		{
-			_distanceToCamera = _cameraToControl.transform.position - _squad.AveragePosition;
-			_isInit = true;
-		}
-		else
-		{
-			Vector3 newPosition = Vector3.Lerp(_cameraToControl.transform.position, _squad.AveragePosition + _distanceToCamera + _bias, Time.deltaTime * _speed);
-			_cameraToControl.transform.position = newPosition;
-		}
+		Vector3 newPosition = Vector3.Lerp(_cameraToControl.transform.position, _squad.AveragePosition + _distanceToCamera + _bias, Time.deltaTime * _speed);
+		_cameraToControl.transform.position = newPosition;
 	}
 
 	void ZoomToPositionState()

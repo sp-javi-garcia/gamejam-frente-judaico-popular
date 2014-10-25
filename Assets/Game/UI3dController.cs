@@ -20,7 +20,6 @@ public class UI3dController : MonoBehaviour
         _hidePosition = _showPosition - transform.up * 5f;
         _isVisible = false;
         transform.localPosition = _hidePosition;
-        Show();
     }
 
     bool _isVisible;
