@@ -79,7 +79,7 @@ public class ZombieSquad : MonoBehaviour
 
 		if(!found)
 		{
-			ZombieJail jail;
+			ZombieJail jail = null;
 			found = FindClosestJailFromPosition(AveragePosition, out position, out jail);
 			if(!found)
 			{
@@ -141,6 +141,7 @@ public class ZombieSquad : MonoBehaviour
 			{
 				found = true;
 
+				foundPosition = currentJail.transform.position;
 				closestDist = distance;
 				zombieJail = currentJail;
 			}

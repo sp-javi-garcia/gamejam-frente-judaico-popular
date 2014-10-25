@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-[RequireComponent (typeof (Animation))]
 public class ZombieJail : MonoBehaviour
 {
 	[SerializeField]
@@ -12,29 +11,34 @@ public class ZombieJail : MonoBehaviour
 	enum State
 	{
 		IDLE,
-		LIBERATED
+		LIBERATED,
+		OPENING,
+		OPENED,
 	}
 
 	State _state = State.IDLE;
-	Animation _animation;
 
 	[SerializeField]
-	public int _life = 500;
+	Animation _animation;
+
+	public int _life = 50;
+
+	[SerializeField]
+	public float _openingTime = 2f;
+
+	Timer _openingTimer = new Timer();
 
 	void Awake()
 	{
-		if(_animation == null)
-		{
-			_animation.GetComponent<Animation>();
-		}
-
-		_squad = FindObjectOfType<ZombieSquad>();
+		_animation = GetComponentInChildren<Animation>();
+		_squad = ZombieSquad.Instance;
+		_zombies.Clear();
 		_zombies = new List<Zombie>(gameObject.GetComponentsInChildren<Zombie>());
 	}
 
 	public void LiberateZombies()
 	{
-		if(_state == State.LIBERATED)
+		if(_life <= 0)
 		{
 			return;
 		}
@@ -43,9 +47,11 @@ public class ZombieJail : MonoBehaviour
 
 		if(_life <= 0)
 		{
+			_openingTimer.WaitForSeconds(_openingTime);
+
 			_animation.Play();
 
-			_state = State.LIBERATED;
+			_state = State.OPENING;
 		}
 	}
 
@@ -62,6 +68,10 @@ public class ZombieJail : MonoBehaviour
 			IdleState();
 			break;
 
+		case State.OPENING:
+			OpeningState();
+            break;
+            
 		case State.LIBERATED:
 			LiberatedState();
 			break;
@@ -75,15 +85,26 @@ public class ZombieJail : MonoBehaviour
 
 	void LiberatedState()
 	{
-		for (int i = 0; i < _zombies.Count; ++i)
-		{
-			LiberateZombie(_zombies[i]);
-		}
+		// Do nothing
 	}
+
+	void OpeningState()
+	{
+		// Do nothing
+		if(_openingTimer.IsFinished())
+		{
+			for (int i = 0; i < _zombies.Count; ++i)
+			{
+				LiberateZombie(_zombies[i]);
+            }
+
+			_state = State.OPENED;
+        }
+    }
 
 	void LiberateZombie(Zombie zombie)
 	{
-		_squad.AddZombie(zombie);
-		zombie.gameObject.transform.parent = _squad.gameObject.transform;
+		zombie.gameObject.transform.parent = ZombieSquad.Instance.gameObject.transform;
+		ZombieSquad.Instance.AddZombie(zombie);
 	}
 }

@@ -65,8 +65,6 @@ public class ZombieAI : MonoBehaviour
 
 	void Update()
 	{
-//		Debug.Log("state: " + _state.ToString());
-
 		switch (_state)
 		{
 		case State.IDLE:
@@ -166,6 +164,7 @@ public class ZombieAI : MonoBehaviour
 			_zombie.SetAnimatorFloat("speed", 0f);
 			_waitToAnimate.WaitForSeconds(0.5f);
 
+			_zombie.SetAnimatorBool("eat", true);
 			_state = State.LIBERATING_JAIL;
 		}
 		else
@@ -286,9 +285,10 @@ public class ZombieAI : MonoBehaviour
 
 	public void LiberateJail(ZombieJail jail)
 	{
+		Debug.Log("Liberate Jail");
 		_jail = jail;
 
-		if(_state == State.BEING_OVERWELMED || _state == State.BEING_PUSHED)
+		if(_state == State.BEING_OVERWELMED || _state == State.BEING_PUSHED || _state == State.LIBERATING_JAIL || _state == State.SEEKING_JAIL)
 		{
 			return;
 		}
