@@ -164,9 +164,8 @@ public class Brain : MonoBehaviour
     {
         _fallingTime += Time.deltaTime;
         _characterController.Move((2f * _fallingForce + (40 * _fallingTime * Vector3.down)) * Time.deltaTime);
-        //_fallingForce = Vector3.Lerp(_fallingForce, Vector3.zero, 0.1f);
         
-        if (transform.position.y < 1.5f) //Physics.Raycast (transform.position, -Vector3.up, 1f))
+        if (transform.position.y < 1.5f)
         {
             _fallingForce = Vector3.Lerp(_fallingForce, Vector3.zero, 0.25f);
             //_fallingForce = Vector3.zero;
@@ -174,13 +173,12 @@ public class Brain : MonoBehaviour
         }
         else
         {
-            //TODO: WIND!!!
             _fallingTimeout = 1f;
             Vector3 currentRotation = BrainGO.transform.rotation.eulerAngles;
             BrainGO.transform.rotation = Quaternion.Euler(currentRotation.x + _fallingRotationVector.x * Time.deltaTime,
                                                           currentRotation.y + _fallingRotationVector.y * Time.deltaTime,
                                                           currentRotation.z + _fallingRotationVector.z * Time.deltaTime);
-            _characterController.Move(WindController.WindForce * Mathf.Min(0.1f, 0.05f * _fallingTime));
+            _characterController.Move(WindController.WindForce * Mathf.Min(0.1f, 0.05f * _fallingTime) * Time.deltaTime);
         }
 
         if (_fallingTimeout <= 0f)
