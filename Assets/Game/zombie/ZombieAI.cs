@@ -56,6 +56,8 @@ public class ZombieAI : MonoBehaviour
 
 	void Update()
 	{
+//		Debug.Log("state: " + _state.ToString());
+
 		switch (_state)
 		{
 		case State.IDLE:
@@ -212,7 +214,7 @@ public class ZombieAI : MonoBehaviour
 
 	void ChasingState()
 	{
-		_zombie.SetAnimatorFloat("speed", rigidbody.velocity.magnitude / _zombieMover.MovementParameters.DefaultMaxVelocity);
+        _zombie.SetAnimatorFloat("speed", rigidbody.velocity.magnitude / _zombieMover.MovementParameters.DefaultMaxVelocity);
 
 		// Find the closest obstacle and follow it!
 		_zombieMover.Seek(_target);
@@ -232,7 +234,7 @@ public class ZombieAI : MonoBehaviour
 		}
 		else
 		{
-			_zombie.SetAnimatorFloat("speed", rigidbody.velocity.magnitude / _zombieMover.MovementParameters.DefaultMaxVelocity);
+            _zombie.SetAnimatorFloat("speed", rigidbody.velocity.magnitude / _zombieMover.MovementParameters.DefaultMaxVelocity);
 		
 			// Find the closest obstacle and follow it!
 			_zombieMover.Seek(_target);

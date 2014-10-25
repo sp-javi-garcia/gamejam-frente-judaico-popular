@@ -8,14 +8,16 @@ public class HumanBase : MonoBehaviour
     bool _zombiesArrived = false;
     void OnTriggerEnter(Collider other)
     {
-        if (!_zombiesArrived)
+        Zombie zombie = other.gameObject.GetComponent<Zombie>();
+        if (zombie != null)
         {
-            _zombiesArrived = true;
-            Zombie zombie = other.gameObject.GetComponent<Zombie>();
-            if (zombie != null)
+            if (!_zombiesArrived)
             {
+                _zombiesArrived = true;
                 GameController.Instance.ZombiesArrived();
             }
+            // TODO: make the zombie attack or something
+            //zombie.EatBrain();
         }
     }
 }
