@@ -115,8 +115,9 @@ public class ZombieSquad : MonoBehaviour
 			{
 				Zombie zombie = _zombies[i];
 				
-            zombie.SeekBrain(position, brain);
+                zombie.SeekBrain(position, brain);
 			}
+            SetLastTargetedBrain(brain);
 		}
 	}
 
@@ -174,26 +175,41 @@ public class ZombieSquad : MonoBehaviour
 		return found;
 	}
 
+    Vector3 _brainDirection = Vector3.zero;
+    float _remainingBrainDirectionTime = 0f;
+    public void SetLastTargetedBrain(Brain brain)
+    {
+        _brainDirection = Vector3.Normalize(brain.transform.position - AveragePosition);
+        _remainingBrainDirectionTime = 4f;
+    }
+
 	Vector3 CalculateSquadAvgForward()
 	{
-		Vector3 avgForward = Vector3.zero;
-		if(_zombies.Count > 0)
-		{
-			for (int i = 0; i < _zombies.Count; ++i) 
-			{
-				Zombie zombie = _zombies[i];
-				
-				avgForward += zombie.transform.forward;
-			}
-			
-			avgForward /= _zombies.Count;
-		}
-		else
-		{
-			avgForward = Vector3.up;
-		}
-		
-		return avgForward.normalized;
+        _remainingBrainDirectionTime -= Time.deltaTime;
+        if (_remainingBrainDirectionTime <= 0f)
+        {
+    		Vector3 avgForward = Vector3.zero;
+    		if(_zombies.Count > 0)
+    		{
+    			for (int i = 0; i < _zombies.Count; ++i) 
+    			{
+    				Zombie zombie = _zombies[i];
+    				
+    				avgForward += zombie.transform.forward;
+    			}
+
+    			avgForward /= _zombies.Count;
+    		}
+    		else
+    		{
+    			avgForward = Vector3.up;
+    		}
+            return avgForward.normalized;
+        }
+        else
+        {
+            return _brainDirection;
+        }
 	}
 
 	Vector3 CalculateSquadAvgPosition ()
