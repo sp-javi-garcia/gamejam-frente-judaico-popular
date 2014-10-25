@@ -180,7 +180,7 @@ public class Brain : MonoBehaviour
             BrainGO.transform.rotation = Quaternion.Euler(currentRotation.x + _fallingRotationVector.x * Time.deltaTime,
                                                           currentRotation.y + _fallingRotationVector.y * Time.deltaTime,
                                                           currentRotation.z + _fallingRotationVector.z * Time.deltaTime);
-
+            _characterController.Move(WindController.WindForce * Mathf.Min(0.1f, 0.05f * _fallingTime));
         }
 
         if (_fallingTimeout <= 0f)
