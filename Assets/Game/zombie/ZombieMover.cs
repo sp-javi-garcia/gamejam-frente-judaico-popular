@@ -68,6 +68,7 @@ public class ZombieMover : MonoBehaviour
 	enum State
 	{
 		IDLE,
+		STOP_MOVEMENT,
 		SEEK
 	}
 
@@ -96,6 +97,8 @@ public class ZombieMover : MonoBehaviour
 	public Vector3 SteeringVelocity;
 	public Vector3 BoidForces;
 
+	public float StopSpeed = 0.1f;
+
 	void Awake()
 	{
 		_zombie = GetComponent<Zombie>();
@@ -111,10 +114,11 @@ public class ZombieMover : MonoBehaviour
 
 	public void StopMovement()
 	{
+		rigidbody.velocity = Vector3.zero;
 		_state = State.IDLE;
 	}
 
-	void Update()
+	void LateUpdate()
 	{
 		switch (_state)
 		{
@@ -129,9 +133,9 @@ public class ZombieMover : MonoBehaviour
 	}
 
 	#region states
+
 	void IdleState()
 	{
-        rigidbody.velocity = Vector3.Lerp(rigidbody.velocity, Vector3.zero, 0.1f);
 	}
 
 	void SeekState()
