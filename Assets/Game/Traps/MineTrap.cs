@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class MineTrap : MonoBehaviour
 {
@@ -64,8 +65,8 @@ public class MineTrap : MonoBehaviour
 
     void DamageZombies()
     {
-        Zombie[] zombies = ZombieSquad.Instance.Zombies;
-        for (int i = 0; i < zombies.Length; ++i)
+        List<Zombie> zombies = ZombieSquad.Instance.Zombies;
+        for (int i = 0; i < zombies.Count; ++i)
         {
             Zombie zombie = zombies[i];
             float distance = Vector3.Distance(zombie.transform.position, transform.position);

@@ -184,7 +184,7 @@ public class ZombieMover : MonoBehaviour
 
 	void CalculateBoidForces()
 	{
-		Zombie [] zombies = _zombie.Squad.Zombies;
+		List<Zombie> zombies = _zombie.Squad.Zombies;
 
 		_separationList.Clear();
 		_alignmentList.Clear(); 
@@ -192,7 +192,7 @@ public class ZombieMover : MonoBehaviour
 
 		Vector3 boidSteeringForce = Vector3.zero;
 
-		for (int i = 0; i < zombies.Length; ++i) 
+		for (int i = 0; i < zombies.Count; ++i) 
 		{
 			Zombie currZombie = zombies[i];
 
