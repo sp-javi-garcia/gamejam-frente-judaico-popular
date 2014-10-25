@@ -83,7 +83,7 @@ public class ZombieSquad : MonoBehaviour
 			found = FindClosestJailFromPosition(AveragePosition, out position, out jail);
 			if(!found)
 			{
-				if(_startTimer.IsFinished())
+				if(_startTimer.IsFinished() && false)
 				{
 					position = AveragePosition + AverateForward * 600;
 				}

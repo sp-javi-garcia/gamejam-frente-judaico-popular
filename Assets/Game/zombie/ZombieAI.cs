@@ -182,6 +182,11 @@ public class ZombieAI : MonoBehaviour
 
 	public void LiberatingJailState()
 	{	
+		_zombieMover.StopMovement();
+
+		Quaternion quat = Quaternion.LookRotation((_jail.transform.position - transform.position).normalized);
+		transform.rotation = quat;
+
 		_jail.LiberateZombies();
 
 		if(_jail.IsLiberated())
@@ -300,7 +305,7 @@ public class ZombieAI : MonoBehaviour
 	#region States
 	void IdleState()
 	{
-		// Do nothing
+		rigidbody.velocity = Vector3.zero;
 	}
 
 	void ChasingState()
