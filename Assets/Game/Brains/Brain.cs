@@ -75,7 +75,7 @@ public class Brain : MonoBehaviour
         }
     }
 
-    const float kEatTime = 1f;
+    const float kEatTime = 2f;
     float _remainingEatTime;
     bool _beingEat;
     public void SetEating()
