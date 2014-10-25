@@ -83,6 +83,10 @@ public class WaypointMover : MonoBehaviour
 			_state = State.NEXT_WAYPOINT;
 		}
 
+		Quaternion quat = Quaternion.LookRotation(targetPos - transform.position);
+
+
 		transform.position = currentPosition;
+
     }
 }
