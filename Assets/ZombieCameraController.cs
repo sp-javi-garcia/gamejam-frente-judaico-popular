@@ -59,6 +59,7 @@ public class ZombieCameraController : MonoBehaviour
 
 		_waitInZoom.WaitForSeconds(1.25f);
 		_state = State.ZOOM_TO_POSITION;
+        UI3dController.Instance.Hide();
 	}
 
 	void DefaultState()
@@ -83,6 +84,7 @@ public class ZombieCameraController : MonoBehaviour
 		if(_waitInZoom.IsFinished())
 		{
 			_state = State.DEFAULT;
+            UI3dController.Instance.Show();
 		}
 	}
 }
