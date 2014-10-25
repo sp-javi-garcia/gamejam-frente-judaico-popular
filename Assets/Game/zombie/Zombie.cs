@@ -56,6 +56,7 @@ public class Zombie : MonoBehaviour
             default:
                 if (_life <= 0)
                 {
+                    ZombieSquad.Instance.DeathZombie(this);
                     _zombieAI.SetDeath();
                     StartCoroutine(DeathAnimation());
                 }
@@ -75,6 +76,7 @@ public class Zombie : MonoBehaviour
 
     IEnumerator DoInstaKill()
     {
+        ZombieSquad.Instance.DeathZombie(this);
         _zombieAI.SetDeath();
         iTween.ScaleTo(gameObject, iTween.Hash("scale", Vector3.zero,
                                                "easetype", iTween.EaseType.easeInBack,
