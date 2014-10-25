@@ -20,6 +20,9 @@ public class WaypointMover : MonoBehaviour
 	[SerializeField]
 	float _moveSpeed = 1f;
 
+	[SerializeField]
+	float _rotationSpeed = 2f;
+
 	void Awake()
 	{
 		transform.position = _waypoints[0].position;
@@ -84,8 +87,9 @@ public class WaypointMover : MonoBehaviour
 		}
 
 		Quaternion quat = Quaternion.LookRotation(targetPos - transform.position);
+		Quaternion newQuat = Quaternion.Slerp(transform.rotation, quat, Time.deltaTime * _rotationSpeed);
 
-
+		transform.rotation = newQuat;
 		transform.position = currentPosition;
 
     }
