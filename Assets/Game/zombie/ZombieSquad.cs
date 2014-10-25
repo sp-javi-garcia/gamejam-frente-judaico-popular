@@ -1,14 +1,15 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 [RequireComponent (typeof (ZombieSquadAudioManager))]
 public class ZombieSquad : MonoBehaviour
 {
-	Zombie[] _zombies;
+	List<Zombie> _zombies;
 
 	public ZombieSquadAudioManager AudioManager;
 
-	public Zombie [] Zombies 
+    public List<Zombie> Zombies
 	{
 		get { return _zombies; }
 	}
@@ -20,10 +21,13 @@ public class ZombieSquad : MonoBehaviour
 
 	float distanceToEatBrain = 5f;
 
+    public static ZombieSquad Instance;
+
 	void Awake ()
 	{
 		AudioManager = GetComponent<ZombieSquadAudioManager>();
-		_zombies = GetComponentsInChildren<Zombie> ();
+        Instance = this;
+		_zombies = new List<Zombie>(GetComponentsInChildren<Zombie>());
 		_brainDepot = FindObjectOfType<BrainDepot>();
 		if(_brainDepot == null)
 		{
@@ -53,7 +57,7 @@ public class ZombieSquad : MonoBehaviour
 		{
 			position = _humanBase.transform.position;
 
-			for (int i = 0; i < _zombies.Length; ++i)
+			for (int i = 0; i < _zombies.Count; ++i)
 			{
 				Zombie zombie = _zombies[i];
 				
@@ -74,7 +78,7 @@ public class ZombieSquad : MonoBehaviour
 //			}
 //			else
 //			{
-				for (int i = 0; i < _zombies.Length; ++i)
+				for (int i = 0; i < _zombies.Count; ++i)
 				{
 					Zombie zombie = _zombies[i];
 					
@@ -109,16 +113,16 @@ public class ZombieSquad : MonoBehaviour
 	Vector3 CalculateSquadAvgPosition ()
 	{
 		Vector3 avgPos = Vector3.zero;
-		if(_zombies.Length > 0)
+		if(_zombies.Count > 0)
 		{
-			for (int i = 0; i < _zombies.Length; ++i) 
+			for (int i = 0; i < _zombies.Count; ++i) 
 			{
 				Zombie zombie = _zombies[i];
 
 				avgPos += zombie.transform.position;
 			}
 
-			avgPos /= _zombies.Length;
+			avgPos /= _zombies.Count;
 		}
 
 		return avgPos;
