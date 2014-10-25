@@ -45,6 +45,8 @@ public class Zombie : MonoBehaviour
 	public Animator ZombieOneLegs;
 	public Animator ZombieZeroLegs;
 
+	bool _initAnimator = false;
+
 	ZombieSquad _squad;
 	public ZombieSquad Squad
 	{
@@ -134,8 +136,6 @@ public class Zombie : MonoBehaviour
 		{
 			Debug.LogWarning("No Squad Found!!!");
 		}
-
-		UpdateParametersByMode();
 	}
 
 	Animator GetAnimatorFromChildren(Transform trans)
@@ -170,9 +170,13 @@ public class Zombie : MonoBehaviour
 		_zombieAI.SeekBrain(targetPosition, brain);
 	}
 
-	public void OnBeingOverwhelm(Vector3 position, Vector3 force)
+	public void OnBeingOverwhelm(Vector3 position, float forceMagnitude, int livesToKill)
 	{
-		_zombieAI.BeingOverwhelm(position, force);
+		Life = Life -1;
+		if(Life > 0)
+		{
+			_zombieAI.BeingOverwhelm(position, forceMagnitude);
+		}
 	}
 
     public void OnBeingPushed(Vector3 position, float force, float range = 3f)
@@ -213,6 +217,12 @@ public class Zombie : MonoBehaviour
 
 	void UpdateParametersByMode()
 	{
+		if(!_initAnimator)
+		{
+			_initAnimator = true;
+			UpdateParametersByMode();
+		}
+
 		switch (_mode)
 		{
 		case ZombieMode.TWO_LEGS:

@@ -26,12 +26,35 @@ public class Overwhelming : MonoBehaviour
 	[SerializeField]
 	float _distanceToAccelerate = 10f;
 
+	[SerializeField]
+	float _maxTimeKilling = 10f;
+
+	[SerializeField]
+	int _livesToTakePerKick = 1;
+
+	[SerializeField]
+	int _maxLivesToKill = 7;
+
+	int _livesKilled = 0;
+
+	Timer _timer = new Timer();
+
 	WaypointMover _mover;
 
 	List<ZombieData> _zombies = new List<ZombieData>();
 	ZombieSquad _squad;
 
 	float _initialMoveSpeed;
+
+	enum State
+	{
+		WALKING,
+		KILLING
+	}
+
+
+
+	State _state = State.WALKING;
 
 	void Awake()
 	{
@@ -50,6 +73,30 @@ public class Overwhelming : MonoBehaviour
 		{
 			_mover.MoveSpeed = _initialMoveSpeed * 2.0f;
 		}
+
+		switch (_state)
+		{
+		case State.WALKING:
+			WalkingState();
+			break;
+
+		case State.KILLING:
+			KillingState();
+			break;
+		}
+	}
+
+	void WalkingState()
+	{
+	}
+
+	void KillingState()
+	{
+		if(_timer.IsFinished())
+		{
+			_livesKilled = 0;
+			_state = State.WALKING;
+		}
 	}
 
 	bool CheckSquadIsClose()
@@ -66,6 +113,15 @@ public class Overwhelming : MonoBehaviour
 
 	void OnTriggerEnter(Collider other)
 	{
+		if(_state == State.WALKING)
+		{
+			_state = State.KILLING;
+			_timer.WaitForSeconds(_maxLivesToKill);
+		}
+
+		int realLifesToKill = Mathf.Min(_livesToTakePerKick, (_maxLivesToKill - _livesKilled));
+		_maxLivesToKill -= realLifesToKill;
+
 		if(other.gameObject.layer == LayerMask.NameToLayer("zombie"))
 		{
 			Zombie zombie = other.gameObject.GetComponent<Zombie>();
@@ -75,7 +131,7 @@ public class Overwhelming : MonoBehaviour
 				Vector3 dirToZombie = transform.position - other.gameObject.transform.position;
 
 				_zombies.Add(new ZombieData(Time.timeSinceLevelLoad, zombie));
-				OverwelmZombie(zombie, dirToZombie);
+				OverwelmZombie(zombie, dirToZombie, realLifesToKill);
 			}
 		}
 	}
@@ -107,8 +163,8 @@ public class Overwhelming : MonoBehaviour
 		return false;
 	}
 
-	void OverwelmZombie(Zombie zombie, Vector3 impactDir)
+	void OverwelmZombie(Zombie zombie, Vector3 impactDir, int lifesKilled)
 	{
-		zombie.OnBeingOverwhelm(transform.position, impactDir.normalized * _forceMagnitude);
+		zombie.OnBeingOverwhelm(transform.position, _forceMagnitude, lifesKilled);
 	}
 }

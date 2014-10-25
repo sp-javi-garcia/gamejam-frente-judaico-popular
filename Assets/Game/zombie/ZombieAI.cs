@@ -167,7 +167,7 @@ public class ZombieAI : MonoBehaviour
 		}
 	}
 
-	public void BeingOverwhelm(Vector3 position, Vector3 force)
+	public void BeingOverwhelm(Vector3 position, float forceMagnitude)
 	{
 		if(_state == State.BEING_OVERWELMED || _state == State.BEING_PUSHED)
 		{
@@ -177,7 +177,7 @@ public class ZombieAI : MonoBehaviour
 		Debug.Log("Being Overwhelmed");
 
 		_zombieMover.StopMovement();
-		rigidbody.AddExplosionForce(force.magnitude, position, 3f, 1f, ForceMode.Impulse);
+		rigidbody.AddExplosionForce(forceMagnitude, position, 3f, 1f, ForceMode.Impulse);
 
 		_overWhelmTimer.WaitForSeconds(1f);
 
