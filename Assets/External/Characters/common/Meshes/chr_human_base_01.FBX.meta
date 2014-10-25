@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: cecb602bb4566844888aa3fe6ffcb36b
+guid: 62a4869eb8c841742b8ddb8abe7d0c3e
 ModelImporter:
   serializedVersion: 16
   fileIDToRecycleName:
@@ -20,10 +20,8 @@ ModelImporter:
     100028: BON_RHand
     100030: BON_RLeg1
     100032: BON_RLeg2
-    100034: chr_zombie_base_01
+    100034: chr_human_base_01
     100036: root
-    100038: chr_zombie_base_02
-    100040: chr_zombie_base_03
     400000: //RootNode
     400002: BON_Chest
     400004: BON_Head
@@ -41,20 +39,14 @@ ModelImporter:
     400028: BON_RHand
     400030: BON_RLeg1
     400032: BON_RLeg2
-    400034: chr_zombie_base_01
+    400034: chr_human_base_01
     400036: root
-    400038: chr_zombie_base_02
-    400040: chr_zombie_base_03
     2300000: //RootNode
     3300000: //RootNode
-    4300000: chr_zombie_base_01
-    4300002: chr_zombie_base_02
-    4300004: chr_zombie_base_03
+    4300000: chr_human_base_01
+    7400000: Take 001
     9500000: //RootNode
-    11100000: //RootNode
-    13700000: chr_zombie_base_01
-    13700002: chr_zombie_base_02
-    13700004: chr_zombie_base_03
+    13700000: chr_human_base_01
   materials:
     importMaterials: 1
     materialName: 0
@@ -63,7 +55,8 @@ ModelImporter:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
     optimizeGameObjects: 0
-    animationCompression: 3
+    motionNodeName: 
+    animationCompression: 1
     animationRotationError: .5
     animationPositionError: .5
     animationScaleError: .5
