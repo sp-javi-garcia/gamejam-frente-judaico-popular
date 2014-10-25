@@ -18,19 +18,75 @@ public class Zombie : MonoBehaviour
 	ZombieMode _mode = ZombieMode.TWO_LEGS;
 
 	[SerializeField]
-	public float TwoLegMaxVelocity = 10f;
+	public float TwoLegMaxVelocity = 2.5f;
 
 	[SerializeField]
-	public float OneLegMaxVelocity = 6f;
+	public float OneLegMaxVelocity = 1.9f;
 
 	[SerializeField]
-	public float ZeroLegMaxVelocity = 3f;
+	public float ZeroLegMaxVelocity = 1.25f;
 
 	ZombieSquad _squad;
 	public ZombieSquad Squad
 	{
 		get { return _squad; }
 	}
+
+    int _life = 3;
+    public int Life
+    {
+        get
+        {
+            return _life;
+        }
+        set
+        {
+            _life = value;
+            switch(_life)
+            {
+            case 3:
+                SetTwoLegMode();
+                break;
+            case 2:
+                SetOneLegMode();
+                break;
+            case 1:
+                SetZeroLegMode();
+                break;
+            default:
+                if (_life <= 0)
+                {
+                    _zombieAI.SetDeath();
+                    StartCoroutine(DeathAnimation());
+                }
+                break;
+            }
+        }
+    }
+
+    IEnumerator DeathAnimation()
+    {
+        // Animator.Play("Death");
+        yield return new WaitForSeconds(1f);
+        iTween.ScaleTo(gameObject, iTween.Hash("scale", Vector3.zero,
+                                               "easetype", iTween.EaseType.easeInBack,
+                                               "time", 0.2));
+    }
+
+    IEnumerator DoInstaKill()
+    {
+        _zombieAI.SetDeath();
+        iTween.ScaleTo(gameObject, iTween.Hash("scale", Vector3.zero,
+                                               "easetype", iTween.EaseType.easeInBack,
+                                               "time", 0.3));
+        yield return new WaitForSeconds(0.3f);
+        Destroy(gameObject);
+    }
+
+    public void InstaKill()
+    {
+        StartCoroutine(DoInstaKill());
+    }
 
 	void Awake()
 	{
@@ -83,9 +139,19 @@ public class Zombie : MonoBehaviour
 		_zombieAI.SeekBrain(targetPosition);
 	}
 
-	public void OnBeingOverwhelm(Vector3 position, float forceMagnitude)
+	public void OnBeingOverwhelm(Vector3 position, Vector3 force)
 	{
-		_zombieAI.BeingOverwhelm(position, forceMagnitude);
+		_zombieAI.BeingOverwhelm(position, force);
+	}
+
+    public void OnBeingPushed(Vector3 position, float force, float range = 3f)
+    {
+        _zombieAI.BeingPushed(position, force, range);
+    }
+
+	public void OnBeingPushed(Vector3 position, Vector3 force)
+	{
+		_zombieAI.BeingPushed(position, force);
 	}
 
 	public void EatBrain()

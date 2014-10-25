@@ -17,8 +17,11 @@ public class ZombieSquad : MonoBehaviour
 
 	float distanceToEatBrain = 5f;
 
+    public static ZombieSquad Instance;
+
 	void Awake ()
 	{
+        Instance = this;
 		_zombies = GetComponentsInChildren<Zombie> ();
 		_brainDepot = FindObjectOfType<BrainDepot>();
 		if(_brainDepot == null)

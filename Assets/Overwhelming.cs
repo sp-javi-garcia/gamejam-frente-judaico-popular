@@ -72,8 +72,10 @@ public class Overwhelming : MonoBehaviour
 
 			if(zombie != null && !CheckzombieWasOverwelmed(zombie))
 			{
+				Vector3 dirToZombie = transform.position - other.gameObject.transform.position;
+
 				_zombies.Add(new ZombieData(Time.timeSinceLevelLoad, zombie));
-				OverwelmZombie(zombie);
+				OverwelmZombie(zombie, dirToZombie);
 			}
 		}
 	}
@@ -105,8 +107,8 @@ public class Overwhelming : MonoBehaviour
 		return false;
 	}
 
-	void OverwelmZombie(Zombie zombie)
+	void OverwelmZombie(Zombie zombie, Vector3 impactDir)
 	{
-		zombie.OnBeingOverwhelm(transform.position, _forceMagnitude);
+		zombie.OnBeingOverwhelm(transform.position, impactDir.normalized * _forceMagnitude);
 	}
 }
