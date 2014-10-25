@@ -26,6 +26,7 @@ public class BrainDepot : MonoBehaviour
     bool _startSequenceCompleted = false;
 
     const int kMaxBrains = 7;
+    public bool HandleTaps { get; set; }
 
     void Start()
     {
@@ -112,7 +113,7 @@ public class BrainDepot : MonoBehaviour
     void CheckBrainClicked()
     {
         // Editor part
-        if (Input.GetMouseButtonDown(0))
+        if (HandleTaps && Input.GetMouseButtonDown(0))
         {
             _onMouseClick = true;
             RaycastHit hit;
@@ -149,7 +150,7 @@ public class BrainDepot : MonoBehaviour
         if (Input.touchCount == 1)
         {
             Touch touch = Input.touches[0];
-            if (touch.phase == TouchPhase.Began)
+            if (HandleTaps && touch.phase == TouchPhase.Began)
             {
                 RaycastHit hit;
                 Ray ray = Camera.main.ScreenPointToRay(Input.touches[0].position);
