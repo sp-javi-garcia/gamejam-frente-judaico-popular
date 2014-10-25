@@ -17,6 +17,9 @@ public class ZombieAI : MonoBehaviour
 
 		BEING_OVERWELMED,
 		BEING_PUSHED,
+
+		BEING_BURNED,
+
         DEATH
 	}
 
@@ -34,6 +37,7 @@ public class ZombieAI : MonoBehaviour
 	Timer _overWhelmTimer = new Timer();
 	Timer _pushTimer = new Timer();
 	Timer _biteTimer = new Timer();
+	Timer _burningTimer = new Timer();
 	#endregion
 
 	ZombieCameraController _cameraController;
@@ -86,6 +90,10 @@ public class ZombieAI : MonoBehaviour
 
 		case State.BEING_PUSHED:
 			BeingPushedState();
+			break;
+
+		case State.BEING_BURNED:
+			BeingBurnedState();
 			break;
 
         case State.DEATH:
@@ -182,7 +190,7 @@ public class ZombieAI : MonoBehaviour
 
 		_zombieMover.StopMovement();
 		rigidbody.AddExplosionForce(forceMagnitude, position, radius, 1f, ForceMode.Impulse);
-		_pushTimer.WaitForSeconds(5f);
+		_pushTimer.WaitForSeconds(2f);
 
 		_state = State.BEING_OVERWELMED;
 	}
@@ -205,9 +213,19 @@ public class ZombieAI : MonoBehaviour
 		
 		_zombieMover.StopMovement();
         rigidbody.AddExplosionForce(forceMagnitude, position, radius, 1f, ForceMode.Impulse);
-		_pushTimer.WaitForSeconds(5f);
+		_pushTimer.WaitForSeconds(2f);
 
 		_state = State.BEING_PUSHED;
+	}
+
+	public void BeingBurned()
+	{
+		_zombie.Life -= 1;
+		bool isDead = _zombie.Life <= 0;
+
+		_burningTimer.WaitForSeconds(2f);
+
+		_state = State.BEING_BURNED;
 	}
 
 	#region States
@@ -302,6 +320,21 @@ public class ZombieAI : MonoBehaviour
 			{
                 _zombie.ProcessDie();
             }
+		}
+	}
+
+	void BeingBurnedState()
+	{
+		if(_burningTimer.IsFinished())
+		{
+			if(_zombie.Life > 0)
+			{
+				_state = State.CHASING;
+			}
+			else
+			{
+				_zombie.ProcessDie();
+			}
 		}
 	}
 

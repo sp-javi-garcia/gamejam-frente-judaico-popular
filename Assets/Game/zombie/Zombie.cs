@@ -126,7 +126,6 @@ public class Zombie : MonoBehaviour
 	public void ProcessDie()
 	{
 	    ZombieSquad.Instance.DeathZombie(this);
-//	    _zombieAI.SetDeath();
 	    StartCoroutine(DeathAnimation());
 	}
 
@@ -266,6 +265,8 @@ public class Zombie : MonoBehaviour
 
 			_zombieMover.MovementParameters.MaxVelocity *= _velocityFactor;
 			_zombieMover.MovementParameters.DefaultMaxVelocity *= _velocityFactor;
+
+			_zombieAI.BeingBurned();
 		}
 		else if(other.tag == "ice")
 		{
