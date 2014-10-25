@@ -91,14 +91,12 @@ public class Zombie : MonoBehaviour
             default:
                 if (_life <= 0)
                 {
-                    ZombieSquad.Instance.DeathZombie(this);
-                    _zombieAI.SetDeath();
-                    StartCoroutine(DeathAnimation());
+				SetZeroLegMode();
                 }
                 break;
             }
         }
-    }
+	}
 
     IEnumerator DeathAnimation()
     {
@@ -119,6 +117,14 @@ public class Zombie : MonoBehaviour
         yield return new WaitForSeconds(0.3f);
         Destroy(gameObject);
     }
+
+	// NOTE: This method is gonna be called from AI
+	public void ProcessDie()
+	{
+	    ZombieSquad.Instance.DeathZombie(this);
+//	    _zombieAI.SetDeath();
+	    StartCoroutine(DeathAnimation());
+	}
 
     public void InstaKill()
     {
@@ -172,24 +178,15 @@ public class Zombie : MonoBehaviour
 		_zombieAI.SeekBrain(targetPosition, brain);
 	}
 
-	public void OnBeingOverwhelm(Vector3 position, float forceMagnitude, int livesToKill)
+	public void OnBeingOverwhelm(Vector3 position, float forceMagnitude, int lifesToKill, float range = 3f)
 	{
-		Life = Life -1;
-		if(Life > 0)
-		{
-			_zombieAI.BeingOverwhelm(position, forceMagnitude);
-		}
+		_zombieAI.BeingOverwhelm(position, forceMagnitude, lifesToKill, range);
 	}
 
-    public void OnBeingPushed(Vector3 position, float force, float range = 3f)
+    public void OnBeingPushed(Vector3 position, float force, int lifesToKill, float range = 3f)
     {
-        _zombieAI.BeingPushed(position, force, range);
+        _zombieAI.BeingPushed(position, force, lifesToKill, range);
     }
-
-	public void OnBeingPushed(Vector3 position, Vector3 force)
-	{
-		_zombieAI.BeingPushed(position, force);
-	}
 
 	public void EatBrain()
 	{
@@ -258,7 +255,6 @@ public class Zombie : MonoBehaviour
 	{
 		if(other.tag == "fire")
 		{
-			Debug.Log("fire");
 			_velocityFactor = FireVelocityFactor;
 			
 			_squad.AudioManager.PlayFireZoneClip();
