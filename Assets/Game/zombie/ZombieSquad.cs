@@ -2,10 +2,13 @@
 using System.Collections;
 using System.Collections.Generic;
 
+[RequireComponent (typeof (ZombieSquadAudioManager))]
 public class ZombieSquad : MonoBehaviour
 {
 	List<Zombie> _zombies;
     List<Zombie> _deathZombies;
+
+	public ZombieSquadAudioManager AudioManager;
 
     public List<Zombie> Zombies
 	{
@@ -23,6 +26,7 @@ public class ZombieSquad : MonoBehaviour
 
 	void Awake ()
 	{
+		AudioManager = GetComponent<ZombieSquadAudioManager>();
         Instance = this;
 		_zombies = new List<Zombie>(GetComponentsInChildren<Zombie>());
 		_brainDepot = FindObjectOfType<BrainDepot>();

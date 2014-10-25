@@ -33,6 +33,7 @@ public class ZombieAI : MonoBehaviour
 
 	Timer _overWhelmTimer = new Timer();
 	Timer _pushTimer = new Timer();
+	Timer _biteTimer = new Timer();
 	#endregion
 
 	ZombieCameraController _cameraController;
@@ -135,13 +136,18 @@ public class ZombieAI : MonoBehaviour
 
 	public void EatBrain()
 	{
-		if(!CanChangeState(State.CHASING_BRAIN))
+		if(!CanChangeState(State.EATING_BRAIN))
 		{
 			return;
 		}
 
+		if(_waitToAnimate.IsFinished())
+		{
+			_zombie.Animator.SetBool("eat", true);
+		}
+
 		_zombieMover.StopMovement();
-		//_zombie.Animator.SetBool("eat", true);
+
 		_state = State.EATING_BRAIN;
 	}
 
@@ -222,6 +228,7 @@ public class ZombieAI : MonoBehaviour
 			_zombieMover.StopMovement();
 			_zombie.Animator.SetFloat("speed", 0f);
 //			_zombie.Animator.SetBool("eat", true);
+			_waitToAnimate.WaitForSeconds(0.5f);
 			_state = State.EATING_BRAIN;
             _targetBrain.SetEating();
 		}
@@ -245,6 +252,12 @@ public class ZombieAI : MonoBehaviour
 		{
 			_cameraController.ZoomToPosition(_target, 0.3f);
 			_lastTimeZombieEat = Time.timeSinceLevelLoad;
+		}
+
+		if(_biteTimer.IsFinished())
+		{
+			_biteTimer.WaitForSeconds(1f);
+			_zombie.AudioManager.PlayBite();
 		}
 
 		Quaternion quat = Quaternion.LookRotation((_target - transform.position).normalized);

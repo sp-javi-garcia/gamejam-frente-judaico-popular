@@ -3,10 +3,11 @@ using System.Collections;
 
 [RequireComponent (typeof (ZombieAI))]
 [RequireComponent (typeof (ZombieMover))]
+[RequireComponent (typeof (ZombieAudioManager))]
 public class Zombie : MonoBehaviour
 {
 	ZombieAI _zombieAI;
-	ZombieMover _zombieMover;
+	public ZombieMover _zombieMover;
 	public Animator Animator;
 
 	enum ZombieMode
@@ -24,7 +25,22 @@ public class Zombie : MonoBehaviour
 	public float OneLegMaxVelocity = 1.9f;
 
 	[SerializeField]
-	public float ZeroLegMaxVelocity = 1.25f;
+	public float ZeroLegMaxVelocity = 3f;
+	
+	[SerializeField]
+	public float FireVelocityFactor = 1.2f;
+	
+	[SerializeField]
+	public float IceVelocityFactor = 2.0f;
+	
+	[SerializeField]
+	public float  LandVelocityFactor = 3f;
+	
+	public float  DefaultVelocityFactor = 1f;
+	
+	public float _velocityFactor = 1f;
+
+	public ZombieAudioManager AudioManager;
 
 	ZombieSquad _squad;
 	public ZombieSquad Squad
@@ -94,8 +110,8 @@ public class Zombie : MonoBehaviour
 	{
 		_zombieAI = GetComponent<ZombieAI>();
 		_zombieMover = GetComponent<ZombieMover>();
-
 		_squad = transform.parent.GetComponent<ZombieSquad>();
+		AudioManager = GetComponent<ZombieAudioManager>();
 
 		if(_squad == null)
 		{
@@ -202,5 +218,65 @@ public class Zombie : MonoBehaviour
 			_zombieMover.MovementParameters.DefaultMaxVelocity = ZeroLegMaxVelocity;
             break;
         }
+	}
+
+	void OnTriggerEnter(Collider other)
+	{
+		if(other.tag == "fire")
+		{
+			Debug.Log("fire");
+			_velocityFactor = FireVelocityFactor;
+			
+			_squad.AudioManager.PlayFireZoneClip();
+
+			_zombieMover.MovementParameters.MaxVelocity *= _velocityFactor;
+			_zombieMover.MovementParameters.DefaultMaxVelocity *= _velocityFactor;
+		}
+		else if(other.tag == "ice")
+		{
+			_velocityFactor = IceVelocityFactor;
+			
+			_squad.AudioManager.PlayIceZoneClip();
+
+			_zombieMover.MovementParameters.MaxVelocity *= _velocityFactor;
+			_zombieMover.MovementParameters.DefaultMaxVelocity *= _velocityFactor;
+		}
+		else if(other.tag == "land")
+		{
+			_velocityFactor = LandVelocityFactor;
+			
+			_squad.AudioManager.PlayLandZoneClip();
+
+			_zombieMover.MovementParameters.MaxVelocity *= _velocityFactor;
+			_zombieMover.MovementParameters.DefaultMaxVelocity *= _velocityFactor;
+		}
+	}
+	
+	void OnTriggerExit(Collider other)
+	{
+		if(other.tag == "fire")
+		{
+			_zombieMover.MovementParameters.DefaultMaxVelocity /= _velocityFactor;
+			_zombieMover.MovementParameters.MaxVelocity = _zombieMover.MovementParameters.DefaultMaxVelocity;
+//			_squad.AudioManager.StopFireZoneClip();
+			
+			_velocityFactor = 1f;
+		}
+		else if(other.tag == "ice")
+		{
+			_zombieMover.MovementParameters.DefaultMaxVelocity /= _velocityFactor;
+			_zombieMover.MovementParameters.MaxVelocity = _zombieMover.MovementParameters.DefaultMaxVelocity;	
+//			_squad.AudioManager.StopIceZoneClip();
+			
+			_velocityFactor = 1f;
+		}
+		else if(other.tag == "land")
+		{
+			_zombieMover.MovementParameters.DefaultMaxVelocity /= _velocityFactor;
+			_zombieMover.MovementParameters.MaxVelocity = _zombieMover.MovementParameters.DefaultMaxVelocity;
+//			_squad.AudioManager.StopLandZoneClip();
+			
+			_velocityFactor = 1f;
+		}
 	}
 }
