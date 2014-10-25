@@ -23,6 +23,7 @@ public class Overwhelming : MonoBehaviour
 		PUSH
 	}
 
+	[SerializeField]
 	AttackType _attackType = AttackType.OVERWHELM;
 
 	[SerializeField]
@@ -76,7 +77,6 @@ public class Overwhelming : MonoBehaviour
 	{
 		ClearOldZombies();
 
-		_mover.MoveSpeed = 1f;
 		bool squadIsClose = CheckSquadIsClose();
 		if(squadIsClose)
 		{

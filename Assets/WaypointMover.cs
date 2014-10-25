@@ -18,7 +18,7 @@ public class WaypointMover : MonoBehaviour
 	int _currentWaypointIdx = 0;
 
 	[SerializeField]
-	public float MoveSpeed = 1f;
+	public float MoveSpeed = 60f;
 
 	[SerializeField]
 	float RotationSpeed = 2f;
