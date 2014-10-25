@@ -16,6 +16,7 @@ public class ZombieSquad : MonoBehaviour
 	}
 
 	public Vector3 AveragePosition;
+	public Vector3 AverateForward;
 	HumanBase _humanBase;
 
 	BrainDepot _brainDepot;
@@ -23,6 +24,8 @@ public class ZombieSquad : MonoBehaviour
 	float distanceToEatBrain = 5f;
 
     public static ZombieSquad Instance;
+
+	private Timer _startTimer = new Timer();
 
 	void Awake ()
 	{
@@ -40,11 +43,15 @@ public class ZombieSquad : MonoBehaviour
 		{
 			Debug.LogWarning("human base is null");
 		}
+
+		_startTimer.WaitForSeconds(3f);
 	}
 
 	void Update ()
 	{
 		AveragePosition = CalculateSquadAvgPosition();
+
+		AverateForward = CalculateSquadAvgForward();
 
 		SetTargetToZombies();
 	}
@@ -57,7 +64,14 @@ public class ZombieSquad : MonoBehaviour
 
 		if(!found)
 		{
-			position = _humanBase.transform.position;
+			if(_startTimer.IsFinished())
+			{
+				position = AveragePosition + AverateForward * 600;
+			}
+			else
+			{
+				position = _humanBase.transform.position;
+			}
 
 			for (int i = 0; i < _zombies.Count; ++i)
 			{
@@ -68,25 +82,12 @@ public class ZombieSquad : MonoBehaviour
 		}
 		else
 		{
-//			float distanceToBrain = (AveragePosition - position).magnitude;
-//			if(distanceToBrain < distanceToEatBrain)
-//			{
-//				for (int i = 0; i < _zombies.Length; ++i)
-//				{
-//					Zombie zombie = _zombies[i];
-//					
-//					zombie.EatBrain();
-//				}
-//			}
-//			else
-//			{
-				for (int i = 0; i < _zombies.Count; ++i)
-				{
-					Zombie zombie = _zombies[i];
-					
-                    zombie.SeekBrain(position, brain);
-				}
-//			}
+			for (int i = 0; i < _zombies.Count; ++i)
+			{
+				Zombie zombie = _zombies[i];
+				
+            zombie.SeekBrain(position, brain);
+			}
 		}
 	}
 
@@ -112,6 +113,28 @@ public class ZombieSquad : MonoBehaviour
 		}
 
 		return found;
+	}
+
+	Vector3 CalculateSquadAvgForward()
+	{
+		Vector3 avgForward = Vector3.zero;
+		if(_zombies.Count > 0)
+		{
+			for (int i = 0; i < _zombies.Count; ++i) 
+			{
+				Zombie zombie = _zombies[i];
+				
+				avgForward += zombie.transform.forward;
+			}
+			
+			avgForward /= _zombies.Count;
+		}
+		else
+		{
+			avgForward = Vector3.up;
+		}
+		
+		return avgForward.normalized;
 	}
 
 	Vector3 CalculateSquadAvgPosition ()

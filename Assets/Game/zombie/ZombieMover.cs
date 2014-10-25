@@ -111,7 +111,6 @@ public class ZombieMover : MonoBehaviour
 
 	public void StopMovement()
 	{
-		rigidbody.velocity = Vector3.zero;
 		_state = State.IDLE;
 	}
 
@@ -132,7 +131,7 @@ public class ZombieMover : MonoBehaviour
 	#region states
 	void IdleState()
 	{
-		// Do nothing
+        rigidbody.velocity = Vector3.Lerp(rigidbody.velocity, Vector3.zero, 0.1f);
 	}
 
 	void SeekState()
@@ -149,7 +148,6 @@ public class ZombieMover : MonoBehaviour
 
 		if(ObstacleForce.magnitude > 1e-1f)
 		{
-//			SeekForce *= 0.25f;
 			SeekForce = Truncate(SeekForce, BoidParameters.MaxSeekSpeed) * BoidParameters.DefaultSeekFactor * 0.25f;
 			BoidForces *= 0.25f;
 		}
@@ -353,8 +351,7 @@ public class ZombieMover : MonoBehaviour
 				factor = (factor + 1f) * MovementParameters.AccelerationFactor;
 			}
 
-//			BoidParameters.SeekFactor *= Mathf.Max(BoidParameters.DefaultSeekFactor * factor, 1f);
-			MovementParameters.MaxVelocity = MovementParameters.DefaultMaxVelocity * Mathf.Min(Mathf.Max(factor, 1f), 3f);
+			MovementParameters.MaxVelocity = MovementParameters.DefaultMaxVelocity * Mathf.Max(factor, 1f);
 		}
 
 		seekForce = seekForce * arriveFactor;

@@ -73,16 +73,19 @@ public class MineTrap : MonoBehaviour
             float distance = Vector3.Distance(zombie.transform.position, transform.position);
             if (distance < Range)
             {
-                zombie.OnBeingPushed(transform.position, MaxPushForce, Range);
-                if (distance < DamageRange)
-                {
-                    zombie.Life -= 1;
-                    // TODO: damage the zombie
-                }
-                if (distance < InstaKillRange)
-                {
-                    zombie.InstaKill();
-                }
+				int lifesToKill = 0;
+
+				if (distance < DamageRange)
+				{
+					lifesToKill = 1;
+					// TODO: damage the zombie
+				}
+				if (distance < InstaKillRange)
+				{
+					lifesToKill = 3;
+				}
+
+                zombie.OnBeingPushed(transform.position, MaxPushForce, lifesToKill, Range);
             }
         }
     }

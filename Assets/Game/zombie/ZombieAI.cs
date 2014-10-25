@@ -17,6 +17,9 @@ public class ZombieAI : MonoBehaviour
 
 		BEING_OVERWELMED,
 		BEING_PUSHED,
+
+		BEING_BURNED,
+
         DEATH
 	}
 
@@ -34,6 +37,7 @@ public class ZombieAI : MonoBehaviour
 	Timer _overWhelmTimer = new Timer();
 	Timer _pushTimer = new Timer();
 	Timer _biteTimer = new Timer();
+	Timer _burningTimer = new Timer();
 	#endregion
 
 	ZombieCameraController _cameraController;
@@ -88,6 +92,10 @@ public class ZombieAI : MonoBehaviour
 			BeingPushedState();
 			break;
 
+		case State.BEING_BURNED:
+			BeingBurnedState();
+			break;
+
         case State.DEATH:
             DeathState();
             break;
@@ -106,10 +114,11 @@ public class ZombieAI : MonoBehaviour
 
 	public void Seek(Vector3 targetPos)
 	{
-		if(!CanChangeState(State.CHASING))
+		if(_state == State.BEING_OVERWELMED || _state == State.BEING_PUSHED)
 		{
 			return;
 		}
+
 		OnPreChangeState(State.CHASING);
 
 		_target = targetPos;
@@ -118,10 +127,10 @@ public class ZombieAI : MonoBehaviour
 
 	public void SeekBrain(Vector3 targetPos, Brain brain)
 	{
-		if(!CanChangeState(State.CHASING_BRAIN))
+		if(_state == State.BEING_OVERWELMED || _state == State.BEING_PUSHED)
 		{
 			return;
-		}
+        }
 
 		if(targetPos == _target)
 		{
@@ -129,6 +138,7 @@ public class ZombieAI : MonoBehaviour
 		}
 
 		OnPreChangeState(State.CHASING_BRAIN);
+
         _targetBrain = brain;
 		_target = targetPos;
 		_state = State.CHASING_BRAIN;
@@ -136,10 +146,10 @@ public class ZombieAI : MonoBehaviour
 
 	public void EatBrain()
 	{
-		if(!CanChangeState(State.EATING_BRAIN))
+		if(_state == State.BEING_OVERWELMED || _state == State.BEING_PUSHED)
 		{
 			return;
-		}
+        }
 
 		if(_waitToAnimate.IsFinished())
 		{
@@ -151,16 +161,6 @@ public class ZombieAI : MonoBehaviour
 		_state = State.EATING_BRAIN;
 	}
 
-	bool CanChangeState(State newState)
-	{
-		if(_state == State.BEING_OVERWELMED)
-		{
-			return false;
-		}
-
-		return true;
-	}
-
 	void OnPreChangeState(State newState)
 	{
 		if(_state == State.EATING_BRAIN)
@@ -169,41 +169,63 @@ public class ZombieAI : MonoBehaviour
 		}
 	}
 
-	public void BeingOverwhelm(Vector3 position, float forceMagnitude)
+	public void BeingOverwhelm(Vector3 position, float forceMagnitude, int lifesToKill, float radius = 3f)
 	{
 		if(_state == State.BEING_OVERWELMED || _state == State.BEING_PUSHED)
 		{
 			return;
 		}
 
-		Debug.Log("Being Overwhelmed");
+		OnPreChangeState(State.BEING_OVERWELMED);
+
+		_zombie.Life -= lifesToKill;
+		bool isDead = _zombie.Life <= 0;
+
+		_zombie.SetAnimatorFloat("speed", 0f);
+		_zombie.SetAnimatorBool("dead", isDead);
+		_zombie.SetAnimatorBool("hit", true);
 
 		_zombieMover.StopMovement();
-		rigidbody.AddExplosionForce(forceMagnitude, position, 3f, 1f, ForceMode.Impulse);
+		_overWhelmTimer.WaitForSeconds(5f);
 
-		_overWhelmTimer.WaitForSeconds(1f);
+		_zombieMover.StopMovement();
+		rigidbody.AddExplosionForce(forceMagnitude, position, radius, 1f, ForceMode.Impulse);
+		_pushTimer.WaitForSeconds(2f);
 
 		_state = State.BEING_OVERWELMED;
 	}
 
-    public void BeingPushed(Vector3 position, Vector3 force)
-    {
-        BeingPushed(position, force.magnitude);
-    }
-
-	public void BeingPushed(Vector3 position, float forceMagnitude, float radius = 3f)
+	public void BeingPushed(Vector3 position, float forceMagnitude, int lifesToKill, float radius = 3f)
 	{
 		if(_state == State.BEING_OVERWELMED || _state == State.BEING_PUSHED)
 		{
 			return;
 		}
 
-		Debug.Log("Being Pushed");
+		OnPreChangeState(State.BEING_PUSHED);
+
+		_zombie.Life -= lifesToKill;
+		bool isDead = _zombie.Life <= 0;
+
+		_zombie.SetAnimatorFloat("speed", 0f);
+		_zombie.SetAnimatorBool("dead", isDead);
+		_zombie.SetAnimatorBool("hit", true);
 		
 		_zombieMover.StopMovement();
         rigidbody.AddExplosionForce(forceMagnitude, position, radius, 1f, ForceMode.Impulse);
-		_pushTimer.WaitForSeconds(1f);
+		_pushTimer.WaitForSeconds(2f);
+
 		_state = State.BEING_PUSHED;
+	}
+
+	public void BeingBurned()
+	{
+		_zombie.Life -= 1;
+		bool isDead = _zombie.Life <= 0;
+
+		_burningTimer.WaitForSeconds(2f);
+
+		_state = State.BEING_BURNED;
 	}
 
 	#region States
@@ -216,7 +238,6 @@ public class ZombieAI : MonoBehaviour
 	{
         _zombie.SetAnimatorFloat("speed", rigidbody.velocity.magnitude / _zombieMover.MovementParameters.DefaultMaxVelocity);
 
-		// Find the closest obstacle and follow it!
 		_zombieMover.Seek(_target);
 	}
 
@@ -227,7 +248,6 @@ public class ZombieAI : MonoBehaviour
 		{
 			_zombieMover.StopMovement();
 			_zombie.SetAnimatorFloat("speed", 0f);
-//			_zombie.Animator.SetBool("eat", true);
 			_waitToAnimate.WaitForSeconds(0.5f);
 			_state = State.EATING_BRAIN;
             _targetBrain.SetEating();
@@ -236,13 +256,15 @@ public class ZombieAI : MonoBehaviour
 		{
             _zombie.SetAnimatorFloat("speed", rigidbody.velocity.magnitude / _zombieMover.MovementParameters.DefaultMaxVelocity);
 		
-			// Find the closest obstacle and follow it!
 			_zombieMover.Seek(_target);
 		}
 	}
 
 	void EatingBrainState()
 	{
+		_zombieMover.StopMovement();
+		_zombie.SetAnimatorFloat("speed", 0f);
+
 		if(_waitToAnimate.IsFinished())
 		{
 			_zombie.SetAnimatorBool("eat", true);
@@ -263,24 +285,56 @@ public class ZombieAI : MonoBehaviour
 		Quaternion quat = Quaternion.LookRotation((_target - transform.position).normalized);
 		transform.rotation = quat;
 
-		_zombieMover.StopMovement();
-		_zombie.SetAnimatorFloat("speed", 0f);
-		// Do nothing
 	}
 
 	void BeingOverWelmedState()
 	{
+		_zombieMover.StopMovement();
+		_zombie.SetAnimatorFloat("speed", 0f);
+
 		if(_overWhelmTimer.IsFinished())
 		{
-			_state = State.CHASING;
+			if(_zombie.Life > 0)
+			{
+				_state = State.CHASING;
+			}
+			else
+            {
+                _zombie.ProcessDie();
+			}
 		}
 	}
 
 	void BeingPushedState()
 	{
+		_zombieMover.StopMovement();
+		_zombie.SetAnimatorFloat("speed", 0f);
+
 		if(_pushTimer.IsFinished())
 		{
-			_state = State.CHASING;
+			if(_zombie.Life > 0)
+			{
+				_state = State.CHASING;
+			}
+			else
+			{
+                _zombie.ProcessDie();
+            }
+		}
+	}
+
+	void BeingBurnedState()
+	{
+		if(_burningTimer.IsFinished())
+		{
+			if(_zombie.Life > 0)
+			{
+				_state = State.CHASING;
+			}
+			else
+			{
+				_zombie.ProcessDie();
+			}
 		}
 	}
 

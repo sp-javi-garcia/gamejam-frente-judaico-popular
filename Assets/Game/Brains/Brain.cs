@@ -75,7 +75,7 @@ public class Brain : MonoBehaviour
         }
     }
 
-    const float kEatTime = 1f;
+    const float kEatTime = 2f;
     float _remainingEatTime;
     bool _beingEat;
     public void SetEating()
@@ -207,6 +207,11 @@ public class Brain : MonoBehaviour
                                                           currentRotation.y + _fallingRotationVector.y * Time.deltaTime,
                                                           currentRotation.z + _fallingRotationVector.z * Time.deltaTime);
             _characterController.Move(WindController.WindForce * Mathf.Min(0.1f, 0.05f * _fallingTime) * Time.deltaTime);
+        }
+
+        if (_fallingTime > 4f)
+        {
+            SetDisappearing();
         }
 
         if (_fallingTimeout <= 0f)
