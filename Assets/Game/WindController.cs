@@ -6,6 +6,7 @@ public class WindController : MonoBehaviour
     public static Vector3 WindForce;
     public float TimeBetweenWindChanges = 10f;
     public float MaxWindForce = 2f;
+    public GameObject Arrow;
     float _remainingTimeUntilWindChange;
 
     void Start()
@@ -30,5 +31,6 @@ public class WindController : MonoBehaviour
             _remainingTimeUntilWindChange = TimeBetweenWindChanges;
             ChangeWindForce();
         }
+        Arrow.transform.localRotation = Quaternion.Lerp(Arrow.transform.localRotation, Quaternion.LookRotation(WindForce), 0.1f);
     }
 }

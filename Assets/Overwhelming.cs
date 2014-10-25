@@ -14,6 +14,7 @@ public class ZombieData
 	}
 }
 
+[RequireComponent (typeof (WaypointMover))]
 public class Overwhelming : MonoBehaviour 
 {
 	[SerializeField]
@@ -22,11 +23,45 @@ public class Overwhelming : MonoBehaviour
 	[SerializeField]
 	float _forceMagnitude = 10f;
 
+	[SerializeField]
+	float _distanceToAccelerate = 10f;
+
+	WaypointMover _mover;
+
 	List<ZombieData> _zombies = new List<ZombieData>();
+	ZombieSquad _squad;
+
+	float _initialMoveSpeed;
+
+	void Awake()
+	{
+		_mover = GetComponent<WaypointMover>();
+		_squad = GameObject.FindObjectOfType<ZombieSquad>();
+		_initialMoveSpeed = _mover.MoveSpeed;
+	}
 
 	void Update()
 	{
 		ClearOldZombies();
+
+		_mover.MoveSpeed = 1f;
+		bool squadIsClose = CheckSquadIsClose();
+		if(squadIsClose)
+		{
+			_mover.MoveSpeed = _initialMoveSpeed * 2.0f;
+		}
+	}
+
+	bool CheckSquadIsClose()
+	{
+		float distanceToSquad = (_squad.AveragePosition - transform.position).magnitude;
+
+		if(distanceToSquad < _distanceToAccelerate)
+		{
+			return true;
+		}
+
+		return false;
 	}
 
 	void OnTriggerEnter(Collider other)
