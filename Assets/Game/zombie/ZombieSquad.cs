@@ -6,7 +6,7 @@ using System.Collections.Generic;
 public class ZombieSquad : MonoBehaviour
 {
 	List<Zombie> _zombies;
-    List<Zombie> _deathZombies;
+    List<Zombie> _deathZombies = new List<Zombie>();
 
 	public ZombieSquadAudioManager AudioManager;
 
