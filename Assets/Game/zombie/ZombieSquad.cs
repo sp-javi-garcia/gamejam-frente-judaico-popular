@@ -180,11 +180,21 @@ public class ZombieSquad : MonoBehaviour
     public void SetLastTargetedBrain(Brain brain)
     {
         _brainDirection = Vector3.Normalize(brain.transform.position - AveragePosition);
-        _remainingBrainDirectionTime = 4f;
     }
 
 	Vector3 CalculateSquadAvgForward()
 	{
+        Vector3 targetVector = _humanBase.transform.position - transform.position;
+        targetVector.Normalize();
+        float xComponentTarget = targetVector.x - targetVector.z;
+        float xComponentBrainDirection = _brainDirection.x - _brainDirection.z;
+        if (xComponentTarget + xComponentBrainDirection > 0f)
+            targetVector.z = 0f;
+        else
+            targetVector.x = 0f;
+        return Vector3.Normalize(targetVector);
+         
+        /*
         _remainingBrainDirectionTime -= Time.deltaTime;
         if (_remainingBrainDirectionTime <= 0f)
         {
@@ -210,6 +220,7 @@ public class ZombieSquad : MonoBehaviour
         {
             return _brainDirection;
         }
+        */
 	}
 
 	Vector3 CalculateSquadAvgPosition ()
