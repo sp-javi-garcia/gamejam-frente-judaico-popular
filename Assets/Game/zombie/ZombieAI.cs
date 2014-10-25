@@ -49,7 +49,7 @@ public class ZombieAI : MonoBehaviour
 
 	void Update()
 	{
-		Debug.Log("state: " + _state.ToString());
+//		Debug.Log("state: " + _state.ToString());
 
 		switch (_state)
 		{
