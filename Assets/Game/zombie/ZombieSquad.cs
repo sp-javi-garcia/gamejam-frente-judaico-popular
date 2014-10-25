@@ -20,6 +20,7 @@ public class ZombieSquad : MonoBehaviour
 	HumanBase _humanBase;
 
 	BrainDepot _brainDepot;
+	ZombieJailManager _jailManager;
 
 	float distanceToEatBrain = 5f;
 
@@ -28,6 +29,8 @@ public class ZombieSquad : MonoBehaviour
 	private Timer _startTimer = new Timer();
 
     public bool WaitingToStart = true;
+
+	public float MaxDistanceToLiberateJail = 10f;
 
 	void Awake ()
 	{
@@ -39,6 +42,8 @@ public class ZombieSquad : MonoBehaviour
 		{
 			Debug.LogWarning("brainDepot base is null");
 		}
+
+		_jailManager = FindObjectOfType<ZombieJailManager>();
 
 		_humanBase = FindObjectOfType<HumanBase>();
 		if(_humanBase == null)
@@ -74,20 +79,34 @@ public class ZombieSquad : MonoBehaviour
 
 		if(!found)
 		{
-			if(_startTimer.IsFinished())
+			ZombieJail jail = null;
+			found = FindClosestJailFromPosition(AveragePosition, out position, out jail);
+			if(!found)
 			{
-				position = AveragePosition + AverateForward * 600;
+				if(_startTimer.IsFinished())
+				{
+					position = AveragePosition + AverateForward * 600;
+				}
+				else
+				{
+					position = _humanBase.transform.position;
+				}
+
+				for (int i = 0; i < _zombies.Count; ++i)
+				{
+					Zombie zombie = _zombies[i];
+					
+					zombie.Seek(position);
+				}
 			}
 			else
 			{
-				position = _humanBase.transform.position;
-			}
-
-			for (int i = 0; i < _zombies.Count; ++i)
-			{
-				Zombie zombie = _zombies[i];
-				
-				zombie.Seek(position);
+				for (int i = 0; i < _zombies.Count; ++i)
+				{
+					Zombie zombie = _zombies[i];
+					
+					zombie.LiberateJail(jail);
+				}
 			}
 		}
 		else
@@ -99,6 +118,36 @@ public class ZombieSquad : MonoBehaviour
             zombie.SeekBrain(position, brain);
 			}
 		}
+	}
+
+	bool FindClosestJailFromPosition(Vector3 position, out Vector3 foundPosition, out ZombieJail zombieJail)
+	{
+		foundPosition = Vector3.zero;
+		zombieJail = null;
+		float closestDist = float.MaxValue;
+		bool found = false;
+		
+		for (int i = 0; i < _jailManager.Jails.Count; ++i)
+		{
+			ZombieJail currentJail = _jailManager.Jails[i];
+
+			if(currentJail.IsLiberated())
+			{
+				continue;
+			}
+			
+			float distance = (currentJail.transform.position - position).magnitude;
+			if(distance < MaxDistanceToLiberateJail && distance < closestDist)
+			{
+				found = true;
+
+				foundPosition = currentJail.transform.position;
+				closestDist = distance;
+				zombieJail = currentJail;
+			}
+		}
+		
+		return found;
 	}
 
 	bool FindClosestBrainFromPosition(Vector3 position, out Vector3 foundPosition, out Brain foundBrain)

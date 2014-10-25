@@ -19,7 +19,7 @@ public class ZombieCameraController : MonoBehaviour
 	ZombieSquad _squad;
 
 	bool _isInit = false;
-	Vector3 _distanceToCamera;
+	public Vector3 DistanceToCamera;
 
 	Vector3 _zoomPos;
 	float _zoomFactor;
@@ -46,7 +46,7 @@ public class ZombieCameraController : MonoBehaviour
 	{
         if(!_isInit)
         {
-            _distanceToCamera = _cameraToControl.transform.position - _squad.AveragePosition;
+            DistanceToCamera = _cameraToControl.transform.position - _squad.AveragePosition;
             _isInit = true;
         }
 
@@ -89,7 +89,7 @@ public class ZombieCameraController : MonoBehaviour
 
         if (_currentInterestingPoint < IntroInterestingPoints.Length)
         {
-            Vector3 currentCameraDestination = IntroInterestingPoints[_currentInterestingPoint].position + _distanceToCamera * 0.5f;
+            Vector3 currentCameraDestination = IntroInterestingPoints[_currentInterestingPoint].position + DistanceToCamera * 0.5f;
             float distance = Vector3.Distance(_cameraToControl.transform.position, currentCameraDestination);
             _cameraToControl.transform.position = Vector3.Lerp(_cameraToControl.transform.position, currentCameraDestination, 3 * Time.deltaTime * _speed);
             if (distance < 1f)
@@ -133,13 +133,13 @@ public class ZombieCameraController : MonoBehaviour
 
 	void DefaultState()
 	{
-		Vector3 newPosition = Vector3.Lerp(_cameraToControl.transform.position, _squad.AveragePosition + _distanceToCamera + _bias, Time.deltaTime * _speed);
+		Vector3 newPosition = Vector3.Lerp(_cameraToControl.transform.position, _squad.AveragePosition + DistanceToCamera + _bias, Time.deltaTime * _speed);
 		_cameraToControl.transform.position = newPosition;
 	}
 
 	void ZoomToPositionState()
 	{
-		Vector3 newPosition = Vector3.Lerp(_cameraToControl.transform.position, _zoomPos + _distanceToCamera * _zoomFactor, Time.deltaTime * _zoomSpeed);
+		Vector3 newPosition = Vector3.Lerp(_cameraToControl.transform.position, _zoomPos + DistanceToCamera * _zoomFactor, Time.deltaTime * _zoomSpeed);
 		_cameraToControl.transform.position = newPosition;
 
 		if(_waitInZoom.IsFinished())

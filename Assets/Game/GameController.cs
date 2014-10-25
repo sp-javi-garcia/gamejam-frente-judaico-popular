@@ -45,14 +45,24 @@ public class GameController : MonoBehaviour
         if (!_gameOver)
         {
             _gameOver = true;
-            if (_zombieSquad.Zombies.Count >= _humanBase.RequiredZombies)
-            {
-                ShowYouWin();
-            }
-            else
-            {
-                ShowYouLose();
-            }
+
+            GameObject cameraGO = Camera.main.gameObject;
+            ZombieCameraController cameraController = _zombieSquad.GetComponent<ZombieCameraController>();
+            Vector3 offset = cameraController.DistanceToCamera;
+            Destroy(cameraController);
+
+            EndCameraController endCameraController = cameraGO.AddComponent<EndCameraController>();
+            Vector3 finalOffset = new Vector3(10f, 10f, 10f);
+            endCameraController.Init(offset, _humanBase.transform.position, finalOffset, () => {
+                if (_zombieSquad.Zombies.Count >= _humanBase.RequiredZombies)
+                {
+                    ShowYouWin();
+                }
+                else
+                {
+                    ShowYouLose();
+                }
+            });
         }
     }
 
@@ -67,7 +77,6 @@ public class GameController : MonoBehaviour
     {
         UIManager.Instance.YouWinPanel.Show();
         _ui3dController.Hide();
-        Debug.Log("You win");
     }
 
     void Update ()
@@ -78,7 +87,7 @@ public class GameController : MonoBehaviour
             TimeUp();
         }
 
-        float remainingTime = LevelTime - _elapsedTime;
+        float remainingTime = Mathf.Max(0f, LevelTime - _elapsedTime);
         int minutes = (int)remainingTime / 60;
         int seconds = (int)remainingTime % 60;
         UI3dController.Instance.RemainingTimeText.text = minutes.ToString() + ":" + seconds.ToString("00");
