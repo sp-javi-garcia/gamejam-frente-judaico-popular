@@ -209,6 +209,11 @@ public class Brain : MonoBehaviour
             _characterController.Move(WindController.WindForce * Mathf.Min(0.1f, 0.05f * _fallingTime) * Time.deltaTime);
         }
 
+        if (_fallingTime > 4f)
+        {
+            SetDisappearing();
+        }
+
         if (_fallingTimeout <= 0f)
         {
             SetIdle();
