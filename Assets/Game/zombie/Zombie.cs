@@ -295,6 +295,8 @@ public class Zombie : MonoBehaviour
 			_zombieMover.MovementParameters.DefaultMaxVelocity /= _velocityFactor;
 			_zombieMover.MovementParameters.MaxVelocity = _zombieMover.MovementParameters.DefaultMaxVelocity;
 //			_squad.AudioManager.StopFireZoneClip();
+
+			_zombieAI.StopBeingBurned();
 			
 			_velocityFactor = 1f;
 		}
