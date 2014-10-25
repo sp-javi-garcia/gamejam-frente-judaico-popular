@@ -8,7 +8,6 @@ public class Zombie : MonoBehaviour
 {
 	ZombieAI _zombieAI;
 	public ZombieMover _zombieMover;
-	public Animator Animator;
 
 	enum ZombieMode
 	{
@@ -42,10 +41,28 @@ public class Zombie : MonoBehaviour
 
 	public ZombieAudioManager AudioManager;
 
+	public Animator ZombieTwoLegs;
+	public Animator ZombieOneLegs;
+	public Animator ZombieZeroLegs;
+
 	ZombieSquad _squad;
 	public ZombieSquad Squad
 	{
 		get { return _squad; }
+	}
+
+	public void SetAnimatorBool(string param, bool value)
+	{
+		ZombieTwoLegs.SetBool(param, value);
+		ZombieOneLegs.SetBool(param, value);
+		ZombieZeroLegs.SetBool(param, value);
+	}
+
+	public void SetAnimatorFloat(string param, float value)
+	{
+		ZombieTwoLegs.SetFloat(param, value);
+		ZombieOneLegs.SetFloat(param, value);
+		ZombieZeroLegs.SetFloat(param, value);
 	}
 
     int _life = 3;
@@ -118,11 +135,7 @@ public class Zombie : MonoBehaviour
 			Debug.LogWarning("No Squad Found!!!");
 		}
 
-		Animator = GetAnimatorFromChildren(transform);
-		if(Animator == null)
-		{
-			Debug.LogWarning("no animator found");
-		}
+		UpdateParametersByMode();
 	}
 
 	Animator GetAnimatorFromChildren(Transform trans)
@@ -202,18 +215,26 @@ public class Zombie : MonoBehaviour
 	{
 		switch (_mode)
 		{
-
 		case ZombieMode.TWO_LEGS:
+			ZombieOneLegs.gameObject.SetActive(false);
+			ZombieZeroLegs.gameObject.SetActive(false);
+
 			_zombieMover.MovementParameters.MaxVelocity = TwoLegMaxVelocity;
 			_zombieMover.MovementParameters.DefaultMaxVelocity = TwoLegMaxVelocity;
 			break;
 
         case ZombieMode.ONE_LEGS:
+			ZombieTwoLegs.gameObject.SetActive(false);
+			ZombieZeroLegs.gameObject.SetActive(false);
+
 			_zombieMover.MovementParameters.MaxVelocity = OneLegMaxVelocity;
 			_zombieMover.MovementParameters.DefaultMaxVelocity = OneLegMaxVelocity;
 			break;
 
 		case ZombieMode.ZERO_LEGS:
+			ZombieTwoLegs.gameObject.SetActive(false);
+			ZombieOneLegs.gameObject.SetActive(false);
+
 			_zombieMover.MovementParameters.MaxVelocity = ZeroLegMaxVelocity;
 			_zombieMover.MovementParameters.DefaultMaxVelocity = ZeroLegMaxVelocity;
             break;
