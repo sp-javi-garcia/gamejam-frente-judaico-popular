@@ -32,6 +32,7 @@ public class ZombieAI : MonoBehaviour
 
 	Timer _overWhelmTimer = new Timer();
 	Timer _pushTimer = new Timer();
+	Timer _biteTimer = new Timer();
 	#endregion
 
 	ZombieCameraController _cameraController;
@@ -249,6 +250,12 @@ public class ZombieAI : MonoBehaviour
 		{
 			_cameraController.ZoomToPosition(_target, 0.3f);
 			_lastTimeZombieEat = Time.timeSinceLevelLoad;
+		}
+
+		if(_biteTimer.IsFinished())
+		{
+			_biteTimer.WaitForSeconds(1f);
+			_zombie.AudioManager.PlayBite();
 		}
 
 		Quaternion quat = Quaternion.LookRotation((_target - transform.position).normalized);

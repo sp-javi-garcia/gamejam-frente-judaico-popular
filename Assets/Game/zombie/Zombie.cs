@@ -3,6 +3,7 @@ using System.Collections;
 
 [RequireComponent (typeof (ZombieAI))]
 [RequireComponent (typeof (ZombieMover))]
+[RequireComponent (typeof (ZombieAudioManager))]
 public class Zombie : MonoBehaviour
 {
 	ZombieAI _zombieAI;
@@ -39,7 +40,7 @@ public class Zombie : MonoBehaviour
 	
 	public float _velocityFactor = 1f;
 
-	ZombieSquadAudioManager _audioManager;
+	public ZombieAudioManager AudioManager;
 
 	ZombieSquad _squad;
 	public ZombieSquad Squad
@@ -110,6 +111,7 @@ public class Zombie : MonoBehaviour
 		_zombieAI = GetComponent<ZombieAI>();
 		_zombieMover = GetComponent<ZombieMover>();
 		_squad = transform.parent.GetComponent<ZombieSquad>();
+		AudioManager = GetComponent<ZombieAudioManager>();
 
 		if(_squad == null)
 		{
@@ -222,6 +224,7 @@ public class Zombie : MonoBehaviour
 	{
 		if(other.tag == "fire")
 		{
+			Debug.Log("fire");
 			_velocityFactor = FireVelocityFactor;
 			
 			_squad.AudioManager.PlayFireZoneClip();
