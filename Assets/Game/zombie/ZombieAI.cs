@@ -3,6 +3,7 @@ using System.Collections;
 
 [RequireComponent (typeof (Zombie))]
 [RequireComponent (typeof (ZombieMover))]
+[RequireComponent (typeof (ImpactPhysics))]
 public class ZombieAI : MonoBehaviour
 {
 	enum State
@@ -47,6 +48,8 @@ public class ZombieAI : MonoBehaviour
 
 	ZombieCameraController _cameraController;
 
+	ImpactPhysics _physics;
+
 	private static float _lastTimeZombieEat = 0f;
 	private static float _minTimeBetweenZoomEfect = 10f;
 
@@ -57,6 +60,8 @@ public class ZombieAI : MonoBehaviour
 		{
 			Debug.LogWarning("Zombie is NOT found!!");
 		}
+
+		_physics = GetComponent<ImpactPhysics>();
 
 		_zombieMover = GetComponent<ZombieMover>();
 
@@ -227,11 +232,8 @@ public class ZombieAI : MonoBehaviour
 		_zombie.SetAnimatorBool("hit", true);
 
 		_zombieMover.StopMovement();
-		_overWhelmTimer.WaitForSeconds(5f);
-
-		_zombieMover.StopMovement();
-		rigidbody.AddExplosionForce(forceMagnitude, position, radius, 1f, ForceMode.Impulse);
-		_pushTimer.WaitForSeconds(2f);
+		_physics.ApplyImpact(position, forceMagnitude * 10000f, 200f, 1.8f);
+		_overWhelmTimer.WaitForSeconds(2f);
 
 		_state = State.BEING_OVERWELMED;
 	}
@@ -253,7 +255,7 @@ public class ZombieAI : MonoBehaviour
 		_zombie.SetAnimatorBool("hit", true);
 		
 		_zombieMover.StopMovement();
-        rigidbody.AddExplosionForce(forceMagnitude, position, radius, 1f, ForceMode.Impulse);
+		_physics.ApplyImpact(position, forceMagnitude * 100000f, 200f, 1.8f);
 		_pushTimer.WaitForSeconds(2f);
 
 		_state = State.BEING_PUSHED;
@@ -285,7 +287,6 @@ public class ZombieAI : MonoBehaviour
 
 	public void LiberateJail(ZombieJail jail)
 	{
-		Debug.Log("Liberate Jail");
 		_jail = jail;
 
 		if(_state == State.BEING_OVERWELMED || _state == State.BEING_PUSHED || _state == State.LIBERATING_JAIL || _state == State.SEEKING_JAIL)
@@ -357,7 +358,6 @@ public class ZombieAI : MonoBehaviour
 
 	void BeingOverWelmedState()
 	{
-		_zombieMover.StopMovement();
 		_zombie.SetAnimatorFloat("speed", 0f);
 
 		if(_overWhelmTimer.IsFinished())
@@ -375,7 +375,6 @@ public class ZombieAI : MonoBehaviour
 
 	void BeingPushedState()
 	{
-		_zombieMover.StopMovement();
 		_zombie.SetAnimatorFloat("speed", 0f);
 
 		if(_pushTimer.IsFinished())

@@ -59,7 +59,6 @@ public class WaypointMover : MonoBehaviour
 
 	void IdleState()
 	{
-
 	}
 
 	void StartWaypointState()

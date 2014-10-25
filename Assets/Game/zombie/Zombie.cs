@@ -193,9 +193,9 @@ public class Zombie : MonoBehaviour
 		_zombieAI.BeingOverwhelm(position, forceMagnitude, lifesToKill, range);
 	}
 
-    public void OnBeingPushed(Vector3 position, float force, int lifesToKill, float range = 3f)
+	public void OnBeingPushed(Vector3 position, float forceMagnitude, int lifesToKill, float range = 3f)
     {
-        _zombieAI.BeingPushed(position, force, lifesToKill, range);
+		_zombieAI.BeingPushed(position, forceMagnitude, lifesToKill, range);
     }
 
 	public void EatBrain()
