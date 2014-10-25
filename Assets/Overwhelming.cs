@@ -35,6 +35,9 @@ public class Overwhelming : MonoBehaviour
 	[SerializeField]
 	int _maxLivesToKill = 7;
 
+	[SerializeField]
+	public float _range = 20f;
+
 	int _livesKilled = 0;
 
 	Timer _timer = new Timer();
@@ -165,6 +168,6 @@ public class Overwhelming : MonoBehaviour
 
 	void OverwelmZombie(Zombie zombie, Vector3 impactDir, int lifesKilled)
 	{
-		zombie.OnBeingOverwhelm(transform.position, _forceMagnitude, lifesKilled);
+		zombie.OnBeingOverwhelm(transform.position, _forceMagnitude, lifesKilled, _range);
 	}
 }

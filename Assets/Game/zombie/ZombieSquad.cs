@@ -68,25 +68,12 @@ public class ZombieSquad : MonoBehaviour
 		}
 		else
 		{
-//			float distanceToBrain = (AveragePosition - position).magnitude;
-//			if(distanceToBrain < distanceToEatBrain)
-//			{
-//				for (int i = 0; i < _zombies.Length; ++i)
-//				{
-//					Zombie zombie = _zombies[i];
-//					
-//					zombie.EatBrain();
-//				}
-//			}
-//			else
-//			{
-				for (int i = 0; i < _zombies.Count; ++i)
-				{
-					Zombie zombie = _zombies[i];
-					
-                    zombie.SeekBrain(position, brain);
-				}
-//			}
+			for (int i = 0; i < _zombies.Count; ++i)
+			{
+				Zombie zombie = _zombies[i];
+				
+            zombie.SeekBrain(position, brain);
+			}
 		}
 	}
 

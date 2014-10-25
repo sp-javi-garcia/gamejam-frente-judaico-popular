@@ -25,7 +25,7 @@ public class BrainDepot : MonoBehaviour
 
     bool _startSequenceCompleted = false;
 
-    const int kMaxBrains = 7;
+    public int MaxBrains = 6;
     public bool HandleTaps { get; set; }
 
     void Start()
@@ -36,7 +36,7 @@ public class BrainDepot : MonoBehaviour
 
     Vector3 GetFinalBrainConveyorPosition(int index)
     {
-        return ConveyorBeltStartPoint.position + ((float) (index)) * (ConveyorBeltEndPoint.position - ConveyorBeltStartPoint.position) / kMaxBrains;
+        return ConveyorBeltStartPoint.position + ((float) (index)) * (ConveyorBeltEndPoint.position - ConveyorBeltStartPoint.position) / (MaxBrains - 1);
     }
 
     public Vector3 GetBrainPositionByBrain(Brain brain)
@@ -77,7 +77,7 @@ public class BrainDepot : MonoBehaviour
 
     Brain AddBrain()
     {
-        if (Brains.Count < kMaxBrains)
+        if (Brains.Count < MaxBrains)
         {
             BrainPrefab brainPrefab = ChooseRandomPrefab();
             Brain brain = Brain.CreateBrain(brainPrefab, this, ConveyorBeltEndPoint.position);
@@ -212,7 +212,7 @@ public class BrainDepot : MonoBehaviour
 
     void Update ()
     {
-        if (_startSequenceCompleted && Brains.Count < kMaxBrains)
+        if (_startSequenceCompleted && Brains.Count < MaxBrains)
         {
             _timeUntilNextBrain -= Time.deltaTime;
             if (_timeUntilNextBrain <= 0f)
