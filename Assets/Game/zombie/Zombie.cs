@@ -55,6 +55,8 @@ public class Zombie : MonoBehaviour
 
 	public void SetAnimatorBool(string param, bool value)
 	{
+		Debug.Log("Set Bool");
+
 		ZombieTwoLegs.SetBool(param, value);
 		ZombieOneLegs.SetBool(param, value);
 		ZombieZeroLegs.SetBool(param, value);
@@ -91,14 +93,13 @@ public class Zombie : MonoBehaviour
             default:
                 if (_life <= 0)
                 {
-                    ZombieSquad.Instance.DeathZombie(this);
-                    _zombieAI.SetDeath();
-                    StartCoroutine(DeathAnimation());
+//                    ZombieSquad.Instance.DeathZombie(this);
+//                    _zombieAI.SetDeath();
+//                    StartCoroutine(DeathAnimation());
                 }
                 break;
             }
         }
-    }
 
     IEnumerator DeathAnimation()
     {
@@ -119,6 +120,14 @@ public class Zombie : MonoBehaviour
         yield return new WaitForSeconds(0.3f);
         Destroy(gameObject);
     }
+
+	// NOTE: This method is gonna be called from AI
+	public void ProcessDie()
+	{
+	    ZombieSquad.Instance.DeathZombie(this);
+//	    _zombieAI.SetDeath();
+	    StartCoroutine(DeathAnimation());
+	}
 
     public void InstaKill()
     {
@@ -172,13 +181,9 @@ public class Zombie : MonoBehaviour
 		_zombieAI.SeekBrain(targetPosition, brain);
 	}
 
-	public void OnBeingOverwhelm(Vector3 position, float forceMagnitude, int livesToKill)
+	public void OnBeingOverwhelm(Vector3 position, float forceMagnitude, int lifesToKill)
 	{
-		Life = Life -1;
-		if(Life > 0)
-		{
-			_zombieAI.BeingOverwhelm(position, forceMagnitude);
-		}
+		_zombieAI.BeingOverwhelm(position, forceMagnitude, lifesToKill);
 	}
 
     public void OnBeingPushed(Vector3 position, float force, float range = 3f)
