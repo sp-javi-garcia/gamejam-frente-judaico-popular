@@ -32,11 +32,12 @@ public class GameController : MonoBehaviour
         }
     }
 
-    void OutOfZombies()
+    public void OutOfZombies()
     {
         if (!_gameOver)
         {
             _gameOver = true;
+            ShowYouLose();
         }
     }
 
