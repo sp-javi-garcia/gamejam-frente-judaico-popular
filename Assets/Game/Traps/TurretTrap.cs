@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
+[RequireComponent (typeof (TorretAudioManager))]
 public class TurretTrap : MonoBehaviour
 {
     public bool DealRealDamage = true;
@@ -11,6 +12,13 @@ public class TurretTrap : MonoBehaviour
     float _remainingReloadTime;
     public GameObject ReceiveDamagePrefab;
     public GameObject ShootPrefab;
+
+	TorretAudioManager _audioManager;
+
+	void Awake()
+	{
+		_audioManager = GetComponent<TorretAudioManager>();
+	}
 
 	void Start ()
     {
@@ -47,6 +55,7 @@ public class TurretTrap : MonoBehaviour
             //yield return new WaitForSeconds(0.1f);
             GameObject fx = (GameObject)Instantiate(ReceiveDamagePrefab, _currentTarget.transform.position + Vector3.up * 2f, _currentTarget.transform.rotation);
             fx.transform.parent = _currentTarget.gameObject.transform;
+			_audioManager.Shot();
             if (DealRealDamage)
                 _currentTarget.Life -= 1;
             _remainingReloadTime = TimeBetweenAttacks;
