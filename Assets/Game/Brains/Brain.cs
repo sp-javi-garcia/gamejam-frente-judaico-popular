@@ -113,7 +113,7 @@ public class Brain : MonoBehaviour
     }
 
     float _remainingDraggingTime;
-    const float kMaxDraggingTime = 0.5f;
+    const float kMaxDraggingTime = 10f;
     void SetDragging()
     {
         _state = State.DRAGGING;
