@@ -53,9 +53,12 @@ public class TurretTrap : MonoBehaviour
             Instantiate(ShootPrefab, ShootingCharacter.transform.position + ShootingCharacter.transform.forward * 1f, ShootingCharacter.transform.rotation);
             //Shot animation
             //yield return new WaitForSeconds(0.1f);
+			if(_audioManager != null)
+			{
+				_audioManager.Shot();
+			}
             GameObject fx = (GameObject)Instantiate(ReceiveDamagePrefab, _currentTarget.transform.position + Vector3.up * 2f, _currentTarget.transform.rotation);
             fx.transform.parent = _currentTarget.gameObject.transform;
-			_audioManager.Shot();
             if (DealRealDamage)
             {
                 _currentTarget.Life -= 1;

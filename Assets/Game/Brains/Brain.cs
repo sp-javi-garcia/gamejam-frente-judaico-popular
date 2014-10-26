@@ -22,6 +22,7 @@ public class Brain : MonoBehaviour
     CharacterController _characterController;
 
 	BrainDepot _depot;
+	BrainAudioManager _audioManager;
 
     public bool CanBeThrown
     {
@@ -38,6 +39,11 @@ public class Brain : MonoBehaviour
         brain.Init(position, depot);
         return brain;
     }
+
+	void Awake()
+	{
+		_audioManager = GetComponent<BrainAudioManager>();
+	}
 
     void Init(Vector3 position, BrainDepot depot)
     {
@@ -220,6 +226,22 @@ public class Brain : MonoBehaviour
             SetIdle();
         }
     }
+
+	void OnCollisionEnter()
+	{
+		if(_state == State.FALLING)
+		{
+			_audioManager.PlayHit();
+		}
+	}
+
+//	void OnTriggerEnter()
+//	{
+//		if(_state == State.FALLING)
+//		{
+//			_audioManager.PlayHit();
+//		}
+//	}
 
     const int kMaxSamples = 5;
     Vector3[] _throwSamples = new Vector3[kMaxSamples];
