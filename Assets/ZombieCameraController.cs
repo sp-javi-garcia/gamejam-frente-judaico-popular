@@ -27,11 +27,27 @@ public class ZombieCameraController : MonoBehaviour
     public Transform[] IntroInterestingPoints;
     public string[] IntroMessages;
 
+	State _lastState;
+
+	[SerializeField]
+	float _maxCameraDeltaY = 30f;
+	float _originalCameraY;
+
+	[SerializeField]
+	float _minZoom = 1f;
+
+	[SerializeField]
+	float _maxZoom = 5f;
+
+	public Transform centralTransform;
+	float _totalZoom = 1f;
+
 	enum State
 	{
 		DEFAULT,
 		ZOOM_TO_POSITION,
-        INTRO
+        INTRO,
+		TWO_TOUCHES
 	}
 	State _state = State.INTRO;
 
@@ -40,6 +56,7 @@ public class ZombieCameraController : MonoBehaviour
 	void Awake()
 	{
 		_squad = GetComponent<ZombieSquad>();
+		_originalCameraY = _cameraToControl.transform.position.y;
 	}
 
 	void Update()
@@ -50,6 +67,12 @@ public class ZombieCameraController : MonoBehaviour
             _isInit = true;
         }
 
+		if(Input.touches != null && Input.touches.Length >= 2)
+		{
+			_lastState = _state;
+			_state = State.TWO_TOUCHES;
+		}
+
 		switch (_state)
 		{
 		case State.DEFAULT:
@@ -59,9 +82,14 @@ public class ZombieCameraController : MonoBehaviour
 		case State.ZOOM_TO_POSITION:
 			ZoomToPositionState();
 			break;
+
         case State.INTRO:
             IntroState();
             break;
+
+		case State.TWO_TOUCHES:
+			TwoTouchesState();
+			break;
 		}
 	}
 
@@ -73,6 +101,66 @@ public class ZombieCameraController : MonoBehaviour
 		_waitInZoom.WaitForSeconds(1.25f);
 		_state = State.ZOOM_TO_POSITION;
         UI3dController.Instance.Hide();
+	}
+
+	public void TwoTouchesState()
+	{
+		if(Input.touches.Length < 2)
+		{
+//			UI3dController.Instance.Show();
+//			_state = _lastState;
+			_totalZoom = 1f;
+			_state = State.DEFAULT;
+		}
+		else
+		{
+//			UI3dController.Instance.Hide();
+
+			Touch touch1 = Input.touches[0];
+			Touch touch2 = Input.touches[1];
+
+			float currentDist = (touch1.position - touch2.position).magnitude;
+			float prevDist = ((touch1.position - touch1.deltaPosition) - (touch2.position - touch2.deltaPosition)).magnitude;
+
+			float zoomFactor = prevDist/currentDist;
+
+			if(zoomFactor > 1f)
+			{
+				_totalZoom += (zoomFactor -1f);
+			}
+			else
+			{
+				_totalZoom -= (1f - zoomFactor);
+			}
+
+			if(_totalZoom > _maxZoom)
+			{
+				_totalZoom = _maxZoom;
+			}
+			else if(_totalZoom < _minZoom)
+			{
+				_totalZoom = _minZoom;
+			}
+
+			float normalizedFactor = (_totalZoom - _minZoom) / (_maxZoom - _minZoom);
+			Debug.Log("TotalZoom " + _totalZoom + ", _minZoom: " + _minZoom + ", _maxZoom: " + _maxZoom + ", Normalized Factor: " + normalizedFactor);
+
+			Vector3 idealNextPos = _squad.AveragePosition + DistanceToCamera + _bias;
+			Vector3 nextPos = Vector3.Lerp(idealNextPos, centralTransform.position, normalizedFactor);
+
+			_cameraToControl.transform.position = nextPos;
+		}
+	}
+
+	Vector3 TruncateByY(Vector3 v, float maxMagnitude)
+	{
+		if(v.y > maxMagnitude)
+		{
+			float scale = v.y / maxMagnitude;
+			v /= scale;
+		}
+
+		return v;
 	}
 
     int _currentInterestingPoint = 0;

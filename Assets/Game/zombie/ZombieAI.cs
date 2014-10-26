@@ -51,7 +51,8 @@ public class ZombieAI : MonoBehaviour
 	ImpactPhysics _physics;
 
 	private static float _lastTimeZombieEat = 0f;
-	private static float _minTimeBetweenZoomEfect = 10f;
+//	private static float _minTimeBetweenZoomEfect = 10f;
+	private static bool _wasZoomed = false;
 
 	void Awake()
 	{
@@ -344,8 +345,10 @@ public class ZombieAI : MonoBehaviour
 			_zombie.SetAnimatorBool("eat", true);
 		}
 
-		if((Time.timeSinceLevelLoad - _lastTimeZombieEat) > _minTimeBetweenZoomEfect)
+		if(!_wasZoomed)
 		{
+			_wasZoomed = true;
+
 			_cameraController.ZoomToPosition(_target, 0.3f);
 			_lastTimeZombieEat = Time.timeSinceLevelLoad;
 		}
@@ -358,7 +361,6 @@ public class ZombieAI : MonoBehaviour
 
 		Quaternion quat = Quaternion.LookRotation((_target - transform.position).normalized);
 		transform.rotation = quat;
-
 	}
 
 	void BeingOverWelmedState()
