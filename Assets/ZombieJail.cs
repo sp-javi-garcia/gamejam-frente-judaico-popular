@@ -48,6 +48,7 @@ public class ZombieJail : MonoBehaviour
 			_openingTimer.WaitForSeconds(_openingTime);
 
 			_animation.Play();
+            Instantiate(Resources.Load("fx_freezombies_01"), transform.position, transform.rotation);
 
 			_state = State.OPENING;
 		}
@@ -97,6 +98,7 @@ public class ZombieJail : MonoBehaviour
             }
 
 			_state = State.OPENED;
+
         }
     }
 
