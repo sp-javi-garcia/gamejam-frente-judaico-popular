@@ -28,7 +28,7 @@ public class GameController : MonoBehaviour
         if (!_gameOver)
         {
             _gameOver = true;
-            ShowYouLose();
+            ShowYouLose("Time's up!");
         }
     }
 
@@ -37,7 +37,7 @@ public class GameController : MonoBehaviour
         if (!_gameOver)
         {
             _gameOver = true;
-            ShowYouLose();
+            ShowYouLose("No zombies left");
         }
     }
 
@@ -61,17 +61,16 @@ public class GameController : MonoBehaviour
                 }
                 else
                 {
-                    ShowYouLose();
+                    ShowYouLose("You need at least " + _humanBase.RequiredZombies + " zombies");
                 }
             });
         }
     }
 
-    void ShowYouLose()
+    void ShowYouLose(string reason)
     {
-        UIManager.Instance.YouLosePanel.Show();
+        UIManager.Instance.YouLosePanel.Show(reason);
         _ui3dController.Hide();
-        Debug.Log("You lose");
     }
 
     void ShowYouWin()

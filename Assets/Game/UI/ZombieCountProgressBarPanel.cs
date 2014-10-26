@@ -43,4 +43,9 @@ public class ZombieCountProgressBarPanel : MonoBehaviour
             ChangeZombieCountAnimated();
         }
 	}
+
+    public void OnClickExit()
+    {
+        Application.LoadLevel("nodemap");
+    }
 }
