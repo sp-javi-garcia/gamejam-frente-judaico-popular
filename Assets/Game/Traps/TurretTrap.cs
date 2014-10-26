@@ -57,7 +57,11 @@ public class TurretTrap : MonoBehaviour
             fx.transform.parent = _currentTarget.gameObject.transform;
 			_audioManager.Shot();
             if (DealRealDamage)
+            {
                 _currentTarget.Life -= 1;
+                if (_currentTarget.Life <= 0)
+                    _currentTarget.ProcessDie();
+            }
             _remainingReloadTime = TimeBetweenAttacks;
             _currentTarget = null;
         }
