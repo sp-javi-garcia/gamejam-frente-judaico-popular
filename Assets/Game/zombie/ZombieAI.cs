@@ -356,7 +356,7 @@ public class ZombieAI : MonoBehaviour
 		if(_biteTimer.IsFinished())
 		{
 			_biteTimer.WaitForSeconds(1f);
-			_zombie.AudioManager.PlayBite();
+			_zombie.AudioManager.PlayEat();
 		}
 
 		Quaternion quat = Quaternion.LookRotation((_target - transform.position).normalized);
