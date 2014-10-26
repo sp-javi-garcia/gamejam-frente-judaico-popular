@@ -36,11 +36,11 @@ public class ZombieCameraController : MonoBehaviour
 	[SerializeField]
 	float _minZoom = 1f;
 
-	[SerializeField]
-	float _maxZoom = 5f;
+	float _maxZoom = 2f;
 
 	public Transform centralTransform;
 	float _totalZoom = 1f;
+	bool _introFinished = false;
 
 	enum State
 	{
@@ -67,7 +67,7 @@ public class ZombieCameraController : MonoBehaviour
             _isInit = true;
         }
 
-		if(Input.touches != null && Input.touches.Length >= 2)
+		if(Input.touches != null && Input.touches.Length >= 2 && _introFinished)
 		{
 			_lastState = _state;
 			_state = State.TWO_TOUCHES;
@@ -107,14 +107,14 @@ public class ZombieCameraController : MonoBehaviour
 	{
 		if(Input.touches.Length < 2)
 		{
-//			UI3dController.Instance.Show();
-//			_state = _lastState;
+			UI3dController.Instance.Show();
+
 			_totalZoom = 1f;
 			_state = State.DEFAULT;
 		}
 		else
 		{
-//			UI3dController.Instance.Hide();
+			UI3dController.Instance.Hide();
 
 			Touch touch1 = Input.touches[0];
 			Touch touch2 = Input.touches[1];
@@ -143,7 +143,6 @@ public class ZombieCameraController : MonoBehaviour
 			}
 
 			float normalizedFactor = (_totalZoom - _minZoom) / (_maxZoom - _minZoom);
-			Debug.Log("TotalZoom " + _totalZoom + ", _minZoom: " + _minZoom + ", _maxZoom: " + _maxZoom + ", Normalized Factor: " + normalizedFactor);
 
 			Vector3 idealNextPos = _squad.AveragePosition + DistanceToCamera + _bias;
 			Vector3 nextPos = Vector3.Lerp(idealNextPos, centralTransform.position, normalizedFactor);
@@ -215,6 +214,8 @@ public class ZombieCameraController : MonoBehaviour
                 _squad.WaitingToStart = false;
                 _state = State.DEFAULT;
                 UI3dController.Instance.Show();
+
+				_introFinished = true;
             }
         }
     }
