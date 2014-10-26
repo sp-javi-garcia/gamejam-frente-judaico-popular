@@ -23,6 +23,8 @@ public class WaypointMover : MonoBehaviour
 	[SerializeField]
 	float RotationSpeed = 2f;
 
+	Vector3 _bias;
+
 	void Awake()
 	{
 		transform.position = _waypoints[0].position;
@@ -75,6 +77,12 @@ public class WaypointMover : MonoBehaviour
 		_state = State.MOVE_TO_WAYPOINT;
     }
 
+//	void SetWaypoints(List<Vector3> points, Vector3 bias)
+//	{
+//		_bias = bias;
+//		_waypoints = points;
+//	}
+
 	void MoveToWaypointState()
 	{
 		Vector3 targetPos = _waypoints[_currentWaypointIdx].position;
@@ -90,6 +98,5 @@ public class WaypointMover : MonoBehaviour
 
 		transform.rotation = newQuat;
 		transform.position = currentPosition;
-
     }
 }
