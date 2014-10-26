@@ -9,6 +9,7 @@ public class BrainPrefab
     public float Chance;
 }
 
+[RequireComponent (typeof (BrainDepotAudioManager))]
 public class BrainDepot : MonoBehaviour
 {
     public List<BrainPrefab> BrainPrefabs;
@@ -27,6 +28,13 @@ public class BrainDepot : MonoBehaviour
 
     public int MaxBrains = 6;
     public bool HandleTaps { get; set; }
+
+	BrainDepotAudioManager _audioManager;
+
+	void Awake()
+	{
+		_audioManager = GetComponent<BrainDepotAudioManager>();
+	}
 
     void Start()
     {
@@ -133,6 +141,8 @@ public class BrainDepot : MonoBehaviour
             _onMouseClick = false;
             if (_selectedBrain.OnBrainReleased(GetBrainPositionByTouch(), TouchInsideBrainDepotArea()))
             {
+				_audioManager.PlayThrow();
+
                 Brains.Remove(_selectedBrain);
 
 				_selectedBrain.transform.parent = null;

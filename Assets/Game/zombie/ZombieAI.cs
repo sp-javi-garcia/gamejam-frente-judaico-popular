@@ -51,7 +51,6 @@ public class ZombieAI : MonoBehaviour
 	ImpactPhysics _physics;
 
 	private static float _lastTimeZombieEat = 0f;
-//	private static float _minTimeBetweenZoomEfect = 10f;
 	private static bool _wasZoomed = false;
 
 	void Awake()
@@ -192,6 +191,7 @@ public class ZombieAI : MonoBehaviour
 
 		if(_jail.IsLiberated())
 		{
+			_zombie.SetAnimatorBool("eat", false);
 			_state = State.CHASING;
 		}
 	}
@@ -216,6 +216,11 @@ public class ZombieAI : MonoBehaviour
 	void OnPreChangeState(State newState)
 	{
 		if(_state == State.EATING_BRAIN)
+		{
+			_zombie.SetAnimatorBool("eat", false);
+		}
+
+		if(_state == State.LIBERATING_JAIL)
 		{
 			_zombie.SetAnimatorBool("eat", false);
 		}

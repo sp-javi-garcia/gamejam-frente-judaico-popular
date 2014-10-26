@@ -15,7 +15,7 @@ public class NodemapController : MonoBehaviour
 
     public void OnLevel3Clicked()
     {
-        Application.LoadLevel("test_level");
+        Application.LoadLevel("area_03");
     }
 
     public void OnLevel4Clicked()

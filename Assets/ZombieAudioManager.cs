@@ -33,6 +33,10 @@ public class ZombieAudioManager : MonoBehaviour
 	void Update()
 	{
 		float deltaTime = Time.timeSinceLevelLoad - _startedTime;
+		if(deltaTime > _maxTime && _audioSource.isPlaying)
+		{
+			_audioSource.Stop();
+		}
 	}
 
 	public void PlayEat(float maxTime = 1f)
