@@ -23,11 +23,14 @@ public class WaypointMover : MonoBehaviour
 	[SerializeField]
 	float RotationSpeed = 2f;
 
-	Vector3 _bias;
+	public bool startInWaypoint = true;
 
 	void Awake()
 	{
-		transform.position = _waypoints[0].position;
+		if(startInWaypoint)
+		{
+			transform.position = _waypoints[0].position;
+		}
 
 		Invoke("Start", 0.5f);
 	}
@@ -76,12 +79,6 @@ public class WaypointMover : MonoBehaviour
 
 		_state = State.MOVE_TO_WAYPOINT;
     }
-
-//	void SetWaypoints(List<Vector3> points, Vector3 bias)
-//	{
-//		_bias = bias;
-//		_waypoints = points;
-//	}
 
 	void MoveToWaypointState()
 	{
