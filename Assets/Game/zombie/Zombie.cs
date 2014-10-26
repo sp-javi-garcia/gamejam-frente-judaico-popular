@@ -185,16 +185,22 @@ public class Zombie : MonoBehaviour
 
 	public void SeekBrain(Vector3 targetPosition, Brain brain)
 	{
+		AudioManager.PlayEat();
+
 		_zombieAI.SeekBrain(targetPosition, brain);
 	}
 
 	public void OnBeingOverwhelm(Vector3 position, float forceMagnitude, int lifesToKill, float range = 3f)
 	{
+		AudioManager.PlayBusHit();
+
 		_zombieAI.BeingOverwhelm(position, forceMagnitude, lifesToKill, range);
 	}
 
 	public void OnBeingPushed(Vector3 position, float forceMagnitude, int lifesToKill, float range = 3f)
     {
+		AudioManager.PlayBusHit();
+
 		_zombieAI.BeingPushed(position, forceMagnitude, lifesToKill, range);
     }
 
@@ -272,6 +278,8 @@ public class Zombie : MonoBehaviour
 			_zombieMover.MovementParameters.MaxVelocity *= _velocityFactor;
 			_zombieMover.MovementParameters.DefaultMaxVelocity *= _velocityFactor;
 
+			AudioManager.PlayFired();
+
 			_zombieAI.BeingBurned();
 		}
 		else if(other.tag == "ice")
@@ -301,6 +309,8 @@ public class Zombie : MonoBehaviour
 			_zombieMover.MovementParameters.DefaultMaxVelocity /= _velocityFactor;
 			_zombieMover.MovementParameters.MaxVelocity = _zombieMover.MovementParameters.DefaultMaxVelocity;
 //			_squad.AudioManager.StopFireZoneClip();
+
+			AudioManager.StopFired();
 
 			_zombieAI.StopBeingBurned();
 			

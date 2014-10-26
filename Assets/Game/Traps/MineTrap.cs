@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
+[RequireComponent (typeof (AudioSource))]
 public class MineTrap : MonoBehaviour
 {
     public enum State
@@ -17,6 +18,9 @@ public class MineTrap : MonoBehaviour
     public float MaxPushForce = 10f;
     public GameObject MineGO;
     public GameObject ExplosionPrefab;
+
+	[SerializeField]
+	List<AudioClip> Explosions;
 
     State _state;
 
@@ -95,6 +99,11 @@ public class MineTrap : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
         GameObject fx = (GameObject)Instantiate(ExplosionPrefab, transform.position + Vector3.up * 2f, transform.rotation);
         // TODO: Explosion FX
+		AudioSource audio = GetComponent<AudioSource>();
+		AudioClip clip = Explosions[Random.Range(0, Explosions.Count)];
+		audio.clip = clip;
+		audio.Play();
+
         MineGO.SetActive(false);
         DamageZombies();
         yield return new WaitForSeconds(2f);
