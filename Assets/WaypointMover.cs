@@ -24,6 +24,9 @@ public class WaypointMover : MonoBehaviour
 	float RotationSpeed = 2f;
 
 	public bool startInWaypoint = true;
+	public Vector3 RandDisplacement;
+
+	Vector3 nextWaypointPos;
 
 	void Awake()
 	{
