@@ -44,8 +44,9 @@ public class TurretTrap : MonoBehaviour
             yield return new WaitForSeconds(0.3f);
             Instantiate(ShootPrefab, ShootingCharacter.transform.position + ShootingCharacter.transform.forward * 1f, ShootingCharacter.transform.rotation);
             //Shot animation
-            yield return new WaitForSeconds(0.1f);
-            Instantiate(ReceiveDamagePrefab, _currentTarget.transform.position + Vector3.up * 1f, _currentTarget.transform.rotation);
+            //yield return new WaitForSeconds(0.1f);
+            GameObject fx = (GameObject)Instantiate(ReceiveDamagePrefab, _currentTarget.transform.position + Vector3.up * 2f, _currentTarget.transform.rotation);
+            fx.transform.parent = _currentTarget.gameObject.transform;
             if (DealRealDamage)
                 _currentTarget.Life -= 1;
             _remainingReloadTime = TimeBetweenAttacks;
