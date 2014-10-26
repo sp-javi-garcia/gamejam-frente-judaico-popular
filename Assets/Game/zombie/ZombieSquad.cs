@@ -185,13 +185,16 @@ public class ZombieSquad : MonoBehaviour
 	Vector3 CalculateSquadAvgForward()
 	{
         Vector3 targetVector = _humanBase.transform.position - transform.position;
-        targetVector.Normalize();
-        float xComponentTarget = targetVector.x - targetVector.z;
-        float xComponentBrainDirection = _brainDirection.x - _brainDirection.z;
-        if (xComponentTarget + xComponentBrainDirection > 0f)
-            targetVector.z = 0f;
-        else
-            targetVector.x = 0f;
+        if (targetVector.magnitude > 10f)
+        {
+            targetVector.Normalize();
+            float xComponentTarget = targetVector.x - targetVector.z;
+            float xComponentBrainDirection = _brainDirection.x - _brainDirection.z;
+            if (xComponentTarget + xComponentBrainDirection > 0f)
+                targetVector.z = 0f;
+            else
+                targetVector.x = 0f;
+        }
         return Vector3.Normalize(targetVector);
          
         /*
