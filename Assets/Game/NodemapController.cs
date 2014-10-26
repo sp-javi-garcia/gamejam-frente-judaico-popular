@@ -23,13 +23,8 @@ public class NodemapController : MonoBehaviour
         Application.LoadLevel("test_level");
     }
 
-    public void OnLevel5Clicked()
+    public void OnInfoButtonClicked()
     {
-        Application.LoadLevel("test_level");
-    }
-
-    public void OnLevel6Clicked()
-    {
-        Application.LoadLevel("test_level");
+        Application.LoadLevel("credits");
     }
 }
