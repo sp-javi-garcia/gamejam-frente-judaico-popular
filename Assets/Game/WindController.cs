@@ -21,7 +21,11 @@ public class WindController : MonoBehaviour
         WindForce.Normalize();
         float windForceMagnitude = Random.Range(0f, MaxWindForce);
         WindForce = WindForce * windForceMagnitude;
-        UI3dController.Instance.WindSpeedText.text = ((int)windForceMagnitude).ToString() + "km/h";
+
+		if(UI3dController.Instance != null && UI3dController.Instance.WindSpeedText != null)
+		{
+        	UI3dController.Instance.WindSpeedText.text = ((int)windForceMagnitude).ToString() + "km/h";
+		}
     }
 
     // Update is called once per frame
