@@ -48,7 +48,11 @@ public class TurretTrap : MonoBehaviour
             GameObject fx = (GameObject)Instantiate(ReceiveDamagePrefab, _currentTarget.transform.position + Vector3.up * 2f, _currentTarget.transform.rotation);
             fx.transform.parent = _currentTarget.gameObject.transform;
             if (DealRealDamage)
+            {
                 _currentTarget.Life -= 1;
+                if (_currentTarget.Life <= 0)
+                    _currentTarget.ProcessDie();
+            }
             _remainingReloadTime = TimeBetweenAttacks;
             _currentTarget = null;
         }
