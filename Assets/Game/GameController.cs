@@ -54,7 +54,7 @@ public class GameController : MonoBehaviour
 
             EndCameraController endCameraController = cameraGO.AddComponent<EndCameraController>();
             Vector3 finalOffset = new Vector3(10f, 10f, 10f);
-            endCameraController.Init(offset, _humanBase.transform.position, finalOffset, () => {
+            endCameraController.Init(offset, _humanBase.transform.position + new Vector3(-3f, 0f, 0f), finalOffset, () => {
                 if (_zombieSquad.Zombies.Count >= _humanBase.RequiredZombies)
                 {
                     ShowYouWin();
