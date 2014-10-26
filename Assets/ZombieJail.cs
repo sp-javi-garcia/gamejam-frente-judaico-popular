@@ -15,13 +15,12 @@ public class ZombieJail : MonoBehaviour
 		OPENING,
 		OPENED,
 	}
-
 	State _state = State.IDLE;
 
 	[SerializeField]
 	Animation _animation;
 
-	public int _life = 50;
+	public int _life = 5;
 
 	public float _openingTime = 0.1f;
 
