@@ -16,6 +16,6 @@ public class YouWinPanel : MonoBehaviour
 
     public void OnRestartGameClicked()
     {
-        Application.LoadLevel("gm14_environment_01_testBrains");
+        Application.LoadLevel("nodemap");
     }
 }
