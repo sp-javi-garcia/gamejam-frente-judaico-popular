@@ -184,7 +184,7 @@ public class ZombieSquad : MonoBehaviour
 
 	Vector3 CalculateSquadAvgForward()
 	{
-        Vector3 targetVector = _humanBase.transform.position - transform.position;
+        Vector3 targetVector = _humanBase.transform.position - AveragePosition;
         if (targetVector.magnitude > 10f)
         {
             targetVector.Normalize();
